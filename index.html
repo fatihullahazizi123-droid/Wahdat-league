@@ -404,7 +404,7 @@
       <div class="brand-logo">وحدت</div>
       <div>
         <h1 id="brandTitle">وحدت گروپ</h1>
-        <p id="brandSubtitle">پلتفرم آنلاین لیگ‌های ای‌فوتبال (eFootball)</p>
+        <p id="brandSubtitle">پلتفرم آنلاین لیگ‌های وحدت گروپ (eFootball)</p>
       </div>
     </div>
     <div id="headerActions" class="header-actions no-print"></div>
@@ -433,7 +433,7 @@
     <form onsubmit="adminLogin(event)">
       <div style="margin-bottom: 12px;">
         <label data-t="adminEmail">ایمیل مدیر</label>
-        <input type="email" id="loginEmail" placeholder="••••••@gmail.com" required dir="ltr" />
+        <input type="email" id="loginEmail" placeholder="*******@gmail.com" required dir="ltr" />
       </div>
       <div style="margin-bottom: 16px;">
         <label data-t="password">رمز عبور</label>
@@ -1671,4 +1671,942 @@
     const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
     const rounds = JSON.parse(JSON.stringify(toArray(league[roundsKey])));
     const thirdMatch = league[thirdKey] ? JSON.parse(JSON.stringify(league[thirdKey])) : null;
-    const match = rounds[roundIdx]?.matche
+    const match = rounds[roundIdx]?.matches?.[matchIdx];
+    if (!match) return;
+
+    const oldWinner = match.winnerId;
+    match.penaltyWinnerId = playerId;
+    match.winnerId = playerId;
+
+    if (oldWinner !== match.winnerId) {
+      clearDownstream(rounds, roundIdx, matchIdx, thirdMatch);
+      if (match.nextMatchIdx >= 0 && rounds[roundIdx + 1]) {
+        rounds[roundIdx + 1].matches[match.nextMatchIdx][match.nextSlot] = match.winnerId;
+      }
+      if (thirdMatch && roundIdx === rounds.length - 2) {
+        const loserId = match.winnerId === match.p1Id ? match.p2Id : match.p1Id;
+        thirdMatch[matchIdx === 0 ? 'p1Id' : 'p2Id'] = loserId;
+      }
+    }
+
+    const upd = {};
+    upd[`publicData/leagues/${league.id}/${roundsKey}`] = rounds;
+    if (thirdMatch) upd[`publicData/leagues/${league.id}/${thirdKey}`] = thirdMatch;
+    await db.ref().update(upd);
+  }
+
+  async function updateThirdPlaceScore(isPlayoff, field, value) {
+    const league = getActiveLeague();
+    if (!state.isAdmin || !league) return;
+    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
+    const m = JSON.parse(JSON.stringify(league[thirdKey]));
+    if (!m || !m.p1Id || !m.p2Id) return;
+
+    m[field] = normalizeDigits(value).replace(/[^0-9]/g, '');
+    if (m.s1 === '' || m.s2 === '' || m.s1 !== m.s2) m.penaltyWinnerId = '';
+
+    if (m.s1 === '' || m.s2 === '') m.winnerId = '';
+    else {
+      const g1 = parseInt(m.s1, 10), g2 = parseInt(m.s2, 10);
+      if (g1 > g2) m.winnerId = m.p1Id;
+      else if (g2 > g1) m.winnerId = m.p2Id;
+      else m.winnerId = m.penaltyWinnerId || '';
+    }
+    await db.ref(`publicData/leagues/${league.id}/${thirdKey}`).set(m);
+  }
+
+  async function setThirdPlacePenalty(isPlayoff, playerId) {
+    const league = getActiveLeague();
+    if (!state.isAdmin || !league) return;
+    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
+    await db.ref(`publicData/leagues/${league.id}/${thirdKey}`).update({
+      penaltyWinnerId: playerId, winnerId: playerId
+    });
+  }
+
+  async function updatePointsScore(groupIdx, matchIdx, field, value) {
+    const league = getActiveLeague();
+    if (!state.isAdmin || !league) return;
+    const cleanVal = normalizeDigits(value).replace(/[^0-9]/g, '');
+    await db.ref(`publicData/leagues/${league.id}/groups/${groupIdx}/matches/${matchIdx}/${field}`).set(cleanVal);
+  }
+
+  function computeStandings(league, group) {
+    const map = {};
+    for (const pid of toArray(group.playerIds)) {
+      const p = getPlayer(league, pid);
+      map[pid] = {
+        id: pid, name: p ? p.name : '---', phone: p ? p.phone : pid,
+        played: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0
+      };
+    }
+
+    for (const m of toArray(group.matches)) {
+      if (m.s1 === '' || m.s2 === '' || m.s1 === undefined || m.s2 === undefined) continue;
+      const g1 = parseInt(m.s1, 10), g2 = parseInt(m.s2, 10);
+      const t1 = map[m.p1Id], t2 = map[m.p2Id];
+      if (!t1 || !t2) continue;
+
+      t1.played++; t2.played++; t1.gf += g1; t1.ga += g2; t2.gf += g2; t2.ga += g1;
+      if (g1 > g2) { t1.w++; t1.pts += 3; t2.l++; }
+      else if (g2 > g1) { t2.w++; t2.pts += 3; t1.l++; }
+      else { t1.d++; t2.d++; t1.pts += 1; t2.pts += 1; }
+    }
+
+    const list = Object.values(map).map(t => ({ ...t, gd: t.gf - t.ga }));
+    list.sort((a, b) => (b.pts - a.pts) || (b.gd - a.gd) || (b.gf - a.gf) || (b.w - a.w) || a.name.localeCompare(b.name, 'fa'));
+    return list;
+  }
+
+  function getCompletedMatchesStats(league) {
+    let total = 0, done = 0;
+    if (league.type === 'knockout') {
+      for (const r of toArray(league.rounds)) {
+        for (const m of toArray(r.matches)) {
+          total++;
+          if (m.winnerId) done++;
+        }
+      }
+      if (league.thirdPlaceMatch) {
+        total++;
+        if (league.thirdPlaceMatch.winnerId) done++;
+      }
+    } else {
+      for (const g of toArray(league.groups)) {
+        for (const m of toArray(g.matches)) {
+          total++;
+          if (m.s1 !== '' && m.s2 !== '' && m.s1 !== undefined && m.s2 !== undefined) done++;
+        }
+      }
+    }
+    return { total, done };
+  }
+
+  // --- PNG Image Generator ---
+  function exportStandingsImage(groupIdx) {
+    const league = getActiveLeague();
+    if (!league) return;
+    const group = toArray(league.groups)[groupIdx];
+    const standings = computeStandings(league, group);
+
+    const w = 900, rowH = 44, headerH = 140, footerH = 60;
+    const h = headerH + (standings.length + 1) * rowH + footerH;
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#091128'); grad.addColorStop(1, '#060a16');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#ffd000'; ctx.fillRect(0, 0, w, 6);
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 28px Tahoma, Arial';
+    ctx.fillText(`وحدت گروپ • ${league.name}`, w / 2, 52);
+    ctx.fillStyle = '#00e5ff';
+    ctx.font = 'bold 20px Tahoma, Arial';
+    ctx.fillText(`${group.name} — جدول رده‌بندی`, w / 2, 92);
+    ctx.fillStyle = '#00e676';
+    ctx.font = '15px Tahoma, Arial';
+    ctx.fillText('اسپانسر: شفیق الله محمدی (رییس گروه وحدت)', w / 2, 122);
+
+    const y0 = headerH;
+    ctx.fillStyle = '#162244'; ctx.fillRect(30, y0, w - 60, rowH);
+    ctx.fillStyle = '#ffd000'; ctx.font = 'bold 16px Tahoma, Arial';
+    ctx.textAlign = 'right'; ctx.fillText('#', 75, y0 + 28);
+    ctx.fillText('بازیکن', 340, y0 + 28);
+    ctx.textAlign = 'center';
+    ctx.fillText('بازی', 420, y0 + 28);
+    ctx.fillText('برد', 495, y0 + 28);
+    ctx.fillText('مساوی', 575, y0 + 28);
+    ctx.fillText('باخت', 655, y0 + 28);
+    ctx.fillText('تفاضل', 740, y0 + 28);
+    ctx.fillText('امتیاز', 825, y0 + 28);
+
+    standings.forEach((row, i) => {
+      const y = y0 + (i + 1) * rowH;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.07)';
+      ctx.fillRect(30, y, w - 60, rowH);
+      ctx.fillStyle = i < 2 ? '#00e676' : '#ffffff';
+      ctx.font = 'bold 17px Tahoma, Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText(String(i + 1), 75, y + 28);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(row.name.slice(0, 26), 340, y + 28);
+      ctx.textAlign = 'center';
+      ctx.font = '16px Tahoma, Arial';
+      ctx.fillText(String(row.played), 420, y + 28);
+      ctx.fillText(String(row.w), 495, y + 28);
+      ctx.fillText(String(row.d), 575, y + 28);
+      ctx.fillText(String(row.l), 655, y + 28);
+      ctx.fillText(row.gd > 0 ? `+${row.gd}` : String(row.gd), 740, y + 28);
+      ctx.fillStyle = '#ffd000'; ctx.font = 'bold 18px Tahoma, Arial';
+      ctx.fillText(String(row.pts), 825, y + 28);
+    });
+
+    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Tahoma, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Wahdat Group eFootball Official Table', w / 2, h - 22);
+
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `wahdat-standings-${group.name}.png`;
+    a.click();
+  }
+
+  function exportMatchesImage(title, matchItems) {
+    const league = getActiveLeague();
+    if (!league) return;
+    const items = matchItems.slice(0, 24);
+    const w = 900, rowH = 48, headerH = 135, footerH = 55;
+    const h = headerH + Math.max(items.length, 1) * rowH + footerH;
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#091128'); grad.addColorStop(1, '#060a16');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#ffd000'; ctx.fillRect(0, 0, w, 6);
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 26px Tahoma, Arial';
+    ctx.fillText(`وحدت گروپ • ${league.name}`, w / 2, 48);
+    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 19px Tahoma, Arial';
+    ctx.fillText(title, w / 2, 86);
+    ctx.fillStyle = '#00e676'; ctx.font = '14px Tahoma, Arial';
+    ctx.fillText('اسپانسر: شفیق الله محمدی (رییس گروه وحدت)', w / 2, 114);
+
+    items.forEach((m, i) => {
+      const y = headerH + i * rowH;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)';
+      ctx.fillRect(30, y, w - 60, rowH - 4);
+      const p1 = getPlayer(league, m.p1Id)?.name || '---';
+      const p2 = getPlayer(league, m.p2Id)?.name || '---';
+      const s1 = m.s1 !== '' && m.s1 !== undefined ? m.s1 : '-';
+      const s2 = m.s2 !== '' && m.s2 !== undefined ? m.s2 : '-';
+
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 16px Tahoma, Arial';
+      ctx.textAlign = 'right'; ctx.fillText(p1.slice(0, 22), 380, y + 29);
+      ctx.textAlign = 'left'; ctx.fillText(p2.slice(0, 22), 520, y + 29);
+      ctx.fillStyle = '#ffd000'; ctx.font = 'bold 20px Tahoma, Arial';
+      ctx.textAlign = 'center'; ctx.fillText(`${s1}  :  ${s2}`, 450, y + 30);
+    });
+
+    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Tahoma, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Wahdat Group eFootball Official Matches', w / 2, h - 18);
+
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `wahdat-matches.png`;
+    a.click();
+  }
+
+  function exportBackup() {
+    if (!state.isAdmin) return;
+    const blob = new Blob([JSON.stringify({ leagues: state.leagues, privatePhones: state.privatePhones }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wahdat-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // --- Render ---
+  function translateStaticNodes() {
+    document.getElementById('brandTitle').textContent = t('brandTitle');
+    document.getElementById('brandSubtitle').textContent = t('brandSubtitle');
+    document.getElementById('footerBox').innerHTML = `<strong>${t('footerText')}</strong>`;
+    document.querySelectorAll('[data-t]').forEach(el => {
+      const k = el.getAttribute('data-t');
+      if (I18N[uiState.lang][k]) el.textContent = I18N[uiState.lang][k];
+    });
+  }
+
+  function render() {
+    applyLanguageDir();
+    translateStaticNodes();
+    renderHeaderActions();
+    renderAnnouncement();
+    renderSponsorHero();
+    renderLeaguesBar();
+    renderMainContent();
+  }
+
+  function renderHeaderActions() {
+    const box = document.getElementById('headerActions');
+    const langBtn = `<button class="btn btn-outline btn-sm" onclick="toggleLanguage()">🌐 ${uiState.lang === 'fa' ? 'EN' : 'فارسی'}</button>`;
+
+    if (state.isAdmin) {
+      box.innerHTML = `
+        <span class="badge badge-green">${t('adminActive')}</span>
+        ${langBtn}
+        <button class="btn btn-primary" onclick="openModal('createModal')">${t('newLeague')}</button>
+        <button class="btn btn-accent" onclick="document.getElementById('bgFileInput').click()">${t('sponsorPhotoBtn')}</button>
+        <input type="file" id="bgFileInput" accept="image/*" class="hidden" onchange="handleBgUpload(event)" />
+        ${state.bgImage ? `<button class="btn btn-danger btn-sm" onclick="clearBgImage()">${t('removePhotoBtn')}</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="openAnnouncementModal()">${t('announcementBtn')}</button>
+        <button class="btn btn-outline btn-sm" onclick="openModal('changePassModal')">${t('changePassBtn')}</button>
+        <button class="btn btn-outline btn-sm" onclick="exportBackup()">${t('backupBtn')}</button>
+        <button class="btn btn-outline btn-sm" onclick="adminLogout()">${t('logoutBtn')}</button>
+      `;
+    } else {
+      box.innerHTML = `
+        <span class="badge badge-cyan">${state.connected ? `<span class="live-dot"></span>${t('online')}` : t('connecting')}</span>
+        ${langBtn}
+        <button class="btn btn-outline" onclick="openModal('loginModal')">${t('adminLoginBtn')}</button>
+      `;
+    }
+  }
+
+  function renderAnnouncement() {
+    const bar = document.getElementById('announcementBar');
+    if (state.announcement) {
+      bar.classList.remove('hidden');
+      bar.innerHTML = `<span>📢</span> ${escapeHtml(state.announcement)}`;
+    } else {
+      bar.classList.add('hidden');
+    }
+  }
+
+  function renderSponsorHero() {
+    const box = document.getElementById('sponsorHero');
+    const avatarHtml = state.bgImage
+      ? `<img src="${state.bgImage}" class="sponsor-avatar" alt="Shafiqullah Mohammadi" />`
+      : `<div class="sponsor-avatar">ش</div>`;
+
+    box.innerHTML = `
+      <div class="sponsor-profile">
+        <div class="sponsor-avatar-wrap">
+          ${avatarHtml}
+          <span class="verified-badge">✓</span>
+        </div>
+        <div class="sponsor-info">
+          <h3>${t('sponsorTitle')} <span class="badge badge-green">Official Sponsor</span></h3>
+          <small>${t('sponsorRole')}</small>
+          <span style="font-size: 11px; color: var(--text-muted);">${t('sponsorNote')}</span>
+        </div>
+      </div>
+      ${state.isAdmin && !state.bgImage ? `
+        <button class="btn btn-sm btn-accent no-print" onclick="document.getElementById('bgFileInput').click()">
+          + ${t('sponsorPhotoBtn')}
+        </button>
+      ` : ''}
+    `;
+  }
+
+  function renderLeaguesBar() {
+    const bar = document.getElementById('leaguesBar');
+    const leagues = getLeaguesArray();
+    if (leagues.length === 0) { bar.innerHTML = ''; return; }
+    const active = getActiveLeague();
+    bar.innerHTML = leagues.map(l => {
+      const count = getApprovedPlayers(l).length;
+      const isActive = active && l.id === active.id;
+      const typeLabel = l.type === 'knockout' ? t('knockout') : t('points');
+      const statusLabel = l.status === 'registration'
+        ? `${count}/${l.capacity}`
+        : (l.status === 'closed' ? `🔒 ${count}/${l.capacity}` : `⚽ ${t('activeStatus')}`);
+      return `
+        <div class="league-pill ${isActive ? 'active' : ''}" onclick="selectLeague('${l.id}')">
+          <h4>${escapeHtml(l.name)}</h4>
+          <span>${typeLabel} • ${l.capacity} ${t('playersCount')} • ${statusLabel}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderMainContent() {
+    const container = document.getElementById('mainContent');
+    if (state.dbError) {
+      container.innerHTML = `<div class="card"><h3 style="color:var(--danger)">Database Error</h3><p>${escapeHtml(state.dbError)}</p></div>`;
+      return;
+    }
+    if (!state.connected) {
+      container.innerHTML = `<div class="card" style="text-align: center; padding: 40px;">${t('connecting')}</div>`;
+      return;
+    }
+
+    const league = getActiveLeague();
+    if (!league) {
+      container.innerHTML = `
+        <div class="card" style="text-align: center; padding: 45px 20px;">
+          <h2 style="color: var(--primary); margin-bottom: 10px;">${t('brandTitle')}</h2>
+          <p style="color: var(--text-muted); margin-bottom: 18px;">${t('sponsorRole')}</p>
+          ${state.isAdmin ? `<button class="btn btn-primary" onclick="openModal('createModal')">${t('newLeague')}</button>` : ''}
+        </div>
+      `;
+      return;
+    }
+
+    const approvedCount = getApprovedPlayers(league).length;
+    const fillPct = Math.round((approvedCount / league.capacity) * 100);
+    const matchStats = league.status === 'active' ? getCompletedMatchesStats(league) : null;
+    const typeText = league.type === 'knockout' ? t('knockout') : t('points');
+    const statusBadge = league.status === 'registration'
+      ? `<span class="badge badge-green"><span class="live-dot"></span>${t('regOpen')}</span>`
+      : (league.status === 'closed' ? `<span class="badge badge-red">${t('regClosed')}</span>` : `<span class="badge badge-green"><span class="live-dot"></span>${t('activeStatus')}</span>`);
+
+    const hasInfo = league.entryFee || league.prizes || league.rules || league.adminWhatsapp;
+
+    const headerCard = `
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <span style="color: var(--primary); font-size: 20px;">🏆 ${escapeHtml(league.name)}</span>
+            <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="badge badge-yellow">${t('type')}: ${typeText}</span>
+              <span class="badge badge-cyan">${t('capacity')}: ${league.capacity} ${t('playersCount')}</span>
+              ${statusBadge}
+            </div>
+          </div>
+          ${state.isAdmin ? `
+            <div class="no-print" style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-outline" onclick="openEditLeagueModal()">${t('editInfoBtn')}</button>
+              ${league.status !== 'active' ? `<button class="btn btn-sm btn-outline" onclick="toggleRegistrationLock()">${league.status === 'registration' ? t('lockReg') : t('unlockReg')}</button>` : ''}
+              ${league.status === 'active' ? `<button class="btn btn-sm btn-outline" onclick="resetLeagueToRegistration()">${t('backToReg')}</button>` : ''}
+              <button class="btn btn-sm btn-danger" onclick="deleteLeague('${league.id}')">${t('deleteLeague')}</button>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="stats-strip">
+          <div class="stat-box">
+            <small>👥 ${t('statPlayers')}</small>
+            <strong>${approvedCount} / ${league.capacity}</strong>
+          </div>
+          ${matchStats ? `
+            <div class="stat-box">
+              <small>⚽ ${t('statMatches')}</small>
+              <strong style="color: var(--emerald);">${matchStats.done} / ${matchStats.total}</strong>
+            </div>
+          ` : `
+            <div class="stat-box">
+              <small>📊 ${t('statProgress')}</small>
+              <strong style="color: var(--accent);">${fillPct}%</strong>
+            </div>
+          `}
+          <div class="stat-box">
+            <small>🎮 ${t('statFormat')}</small>
+            <strong style="font-size: 14px; color: #fff;">${typeText}</strong>
+          </div>
+          ${league.entryFee ? `
+            <div class="stat-box">
+              <small>💵 ${t('entryFee')}</small>
+              <strong style="font-size: 14px; color: var(--emerald);">${escapeHtml(league.entryFee)}</strong>
+            </div>
+          ` : ''}
+        </div>
+
+        ${hasInfo ? `
+          <div class="info-pills">
+            ${league.prizes ? `<div class="info-pill-box"><small>🎁 ${t('prizes')}</small><strong>${escapeHtml(league.prizes)}</strong></div>` : ''}
+            ${league.adminWhatsapp ? `
+              <div class="info-pill-box">
+                <small>📞 ${t('whatsapp')}</small>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+                  <strong dir="ltr">${escapeHtml(league.adminWhatsapp)}</strong>
+                  <a href="${formatWhatsAppUrl(league.adminWhatsapp)}" target="_blank" rel="noopener" class="btn-wa">💬 ${t('msgAdminWa')}</a>
+                </div>
+              </div>
+            ` : ''}
+            ${league.rules ? `<div class="info-pill-box" style="grid-column: 1 / -1;"><small>📜 ${t('rules')}</small>${escapeHtml(league.rules)}</div>` : ''}
+          </div>
+        ` : ''}
+
+        ${league.status === 'active' ? `
+          <div class="tabs no-print" style="margin-top: 14px; margin-bottom: 0;">
+            <button class="tab-btn ${uiState.activeTab === 'matches' ? 'active' : ''}" onclick="setTab('matches')">${t('tabMatches')}</button>
+            <button class="tab-btn ${uiState.activeTab === 'players' ? 'active' : ''}" onclick="setTab('players')">${t('tabPlayers')} (${approvedCount})</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    let bodyHtml = '';
+    if (league.status !== 'active') bodyHtml = renderRegistrationView(league);
+    else if (uiState.activeTab === 'players') bodyHtml = renderRegisteredPlayersCard(league, true);
+    else if (league.type === 'knockout') bodyHtml = renderKnockoutSection(league, false);
+    else bodyHtml = renderPointsSection(league);
+
+    container.innerHTML = headerCard + bodyHtml;
+  }
+
+  function setTab(tab) { uiState.activeTab = tab; render(); }
+
+  function renderRegistrationView(league) {
+    const approved = getApprovedPlayers(league);
+    const pending = getPendingPlayers(league);
+    const pct = Math.round((approved.length / league.capacity) * 100);
+    const isFull = approved.length >= league.capacity;
+    const canPublicRegister = league.status === 'registration' && !isFull;
+
+    return `
+      <div class="card">
+        <div class="card-title">
+          <span>${t('regHeader')}</span>
+          <span class="badge badge-cyan">${approved.length} / ${league.capacity} ${t('playersCount')}</span>
+        </div>
+
+        <div class="progress-wrap"><div class="progress-fill" style="width: ${pct}%"></div></div>
+
+        ${uiState.justRegisteredStatus && !state.isAdmin ? `
+          <div class="alert-info" style="border-color: var(--emerald); color: var(--emerald); background: rgba(0,230,118,0.14);">
+            ${uiState.justRegisteredStatus === 'pending' ? t('regSuccessPending') : t('regSuccessMsg')}
+            <div style="margin-top: 8px;">
+              <button class="btn btn-sm btn-outline" onclick="uiState.justRegisteredStatus=null; render();">${t('regAnother')}</button>
+            </div>
+          </div>
+        ` : ''}
+
+        ${!canPublicRegister ? `
+          <div class="alert-info" style="${isFull ? 'border-color: var(--emerald); color: var(--emerald);' : 'border-color: var(--danger); color: #ff6b78;'}">
+            ${isFull ? t('capFullMsg') : t('regClosedMsg')}
+          </div>
+        ` : (!uiState.justRegisteredStatus || state.isAdmin ? `
+          <form onsubmit="registerPlayer(event)" style="margin-top: 14px;">
+            <div class="grid-3" style="align-items: end;">
+              <div>
+                <label>${t('fullName')}</label>
+                <input type="text" id="regName" required />
+              </div>
+              <div>
+                <label>${t('phoneNum')}</label>
+                <input type="tel" id="regPhone" placeholder="07XXXXXXXX" required dir="ltr" />
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">${t('registerBtn')}</button>
+              </div>
+            </div>
+          </form>
+        ` : '')}
+
+        ${state.isAdmin ? `
+          <div class="no-print" style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${!isFull ? `<button class="btn btn-sm btn-outline" onclick="openModal('bulkModal')">${t('bulkQuick')}</button>` : ''}
+              ${!isFull ? `<button class="btn btn-sm btn-outline" onclick="fillDemoPlayers()">${t('demoFill')}</button>` : ''}
+              ${approved.length + pending.length > 0 ? `<button class="btn btn-sm btn-danger" onclick="clearAllPlayers()">${t('clearAll')}</button>` : ''}
+            </div>
+            <button class="btn btn-success" ${approved.length !== league.capacity ? 'disabled' : ''} onclick="startTournament()">
+              ${t('startDraw')} (${league.capacity})
+            </button>
+          </div>
+        ` : ''}
+      </div>
+
+      ${state.isAdmin && pending.length > 0 ? `
+        <div class="card" style="border-color: var(--primary);">
+          <div class="card-title">
+            <span style="color: var(--primary);">${t('pendingTitle')} (${pending.length})</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>${t('player')}</th><th>${t('phoneHeader')}</th><th>${t('actions')}</th></tr></thead>
+              <tbody>
+                ${pending.map((p, i) => `
+                  <tr>
+                    <td>${i + 1}</td>
+                    <td style="font-weight:700;">${escapeHtml(p.name)}</td>
+                    <td>${renderPhoneWithWa(p.phone)}</td>
+                    <td>
+                      <button class="btn btn-sm btn-success" onclick="approvePlayer('${p.id}')">${t('approveBtn')}</button>
+                      <button class="btn btn-sm btn-danger" onclick="deletePlayer('${p.id}')">${t('rejectBtn')}</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ` : ''}
+
+      ${renderRegisteredPlayersCard(league, false)}
+    `;
+  }
+
+  function renderRegisteredPlayersCard(league, readOnly) {
+    const q = uiState.playerSearch.trim().toLowerCase();
+    const list = getApprovedPlayers(league).filter(p =>
+      p.name.toLowerCase().includes(q) || p.phone.includes(q)
+    );
+
+    return `
+      <div class="card">
+        <div class="card-title">
+          <span>${t('registeredList')} (${getApprovedPlayers(league).length})</span>
+          <input id="playerSearchInput" type="text" style="max-width: 240px;" placeholder="${t('searchName')}" value="${escapeHtml(uiState.playerSearch)}" oninput="onPlayerSearch(this.value)" />
+        </div>
+        ${list.length === 0 ? `<p style="color: var(--text-muted); text-align: center; padding: 20px;">${t('noPlayers')}</p>` : `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>${t('player')}</th>
+                  <th>${t('phoneHeader')}</th>
+                  ${state.isAdmin && !readOnly ? `<th class="no-print" style="width: 140px;">${t('actions')}</th>` : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${list.map((p, idx) => `
+                  <tr>
+                    <td>${idx + 1}</td>
+                    <td style="font-weight: 700;">${escapeHtml(p.name)}</td>
+                    <td>${renderPhoneWithWa(p.phone)}</td>
+                    ${state.isAdmin && !readOnly ? `
+                      <td class="no-print">
+                        <button class="btn btn-sm btn-outline" onclick="editPlayer('${p.id}')">${t('edit')}</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePlayer('${p.id}')">${t('del')}</button>
+                      </td>
+                    ` : ''}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  function onPlayerSearch(val) {
+    uiState.playerSearch = val; render();
+    const el = document.getElementById('playerSearchInput');
+    if (el) { el.focus(); el.setSelectionRange(val.length, val.length); }
+  }
+
+  function onMatchSearch(val) {
+    uiState.matchSearch = val; render();
+    const el = document.getElementById('matchSearchInput');
+    if (el) { el.focus(); el.setSelectionRange(val.length, val.length); }
+  }
+
+  function renderKnockoutSection(league, isPlayoff) {
+    const roundsKey = isPlayoff ? 'playoffRounds' : 'rounds';
+    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
+    const selectedIdxKey = isPlayoff ? 'selectedPlayoffRoundIndex' : 'selectedRoundIndex';
+
+    const rounds = toArray(league[roundsKey]);
+    if (rounds.length === 0) return '';
+
+    const finalRound = rounds[rounds.length - 1];
+    const finalMatch = toArray(finalRound?.matches)[0];
+    const champion = finalMatch?.winnerId ? getPlayer(league, finalMatch.winnerId) : null;
+    const runnerUpId = champion ? (finalMatch.winnerId === finalMatch.p1Id ? finalMatch.p2Id : finalMatch.p1Id) : '';
+    const runnerUp = runnerUpId ? getPlayer(league, runnerUpId) : null;
+    const thirdMatch = league[thirdKey] || null;
+    const thirdWinner = thirdMatch?.winnerId ? getPlayer(league, thirdMatch.winnerId) : null;
+
+    const roundTabs = rounds.map((r, idx) => {
+      const ms = toArray(r.matches);
+      const done = ms.filter(m => m.winnerId).length;
+      return `<button class="tab-btn ${uiState[selectedIdxKey] === idx ? 'active' : ''}" onclick="selectKnockoutRound(${isPlayoff}, ${idx})">${r.name} (${done}/${ms.length})</button>`;
+    }).join('');
+
+    const curIdx = Math.min(uiState[selectedIdxKey], rounds.length - 1);
+    const currentRound = rounds[curIdx];
+    const isFinalTab = curIdx === rounds.length - 1;
+    const q = uiState.matchSearch.trim().toLowerCase();
+
+    const visibleMatches = toArray(currentRound.matches)
+      .map((m, idx) => ({ m, idx }))
+      .filter(({ m }) => {
+        if (!q) return true;
+        const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
+        return (p1?.name || '').toLowerCase().includes(q) || (p2?.name || '').toLowerCase().includes(q) ||
+               (p1?.phone || '').includes(q) || (p2?.phone || '').includes(q);
+      });
+
+    return `
+      ${champion ? `
+        <div class="podium-banner">
+          <div style="font-size: 36px;">🏆</div>
+          <h2 style="color: var(--primary); font-size: 23px;">${t('champion')}: ${escapeHtml(champion.name)}</h2>
+          <div class="podium-grid">
+            <div class="podium-place" style="border-color: var(--primary);">
+              <div>🥇 ${t('champion')}</div>
+              <strong>${escapeHtml(champion.name)}</strong>
+              ${renderPhoneWithWa(champion.phone)}
+            </div>
+            ${runnerUp ? `
+              <div class="podium-place">
+                <div>🥈 ${t('runnerUp')}</div>
+                <strong>${escapeHtml(runnerUp.name)}</strong>
+                ${renderPhoneWithWa(runnerUp.phone)}
+              </div>
+            ` : ''}
+            ${thirdWinner ? `
+              <div class="podium-place">
+                <div>🥉 ${t('thirdPlace')}</div>
+                <strong>${escapeHtml(thirdWinner.name)}</strong>
+                ${renderPhoneWithWa(thirdWinner.phone)}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="card">
+        <div class="card-title">
+          <span>${t('roundMatches')}</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-sm btn-outline no-print" onclick="exportCurrentKnockoutPng(${isPlayoff}, ${curIdx})">${t('exportMatchesPng')}</button>
+            <input id="matchSearchInput" type="text" style="max-width: 220px;" placeholder="${t('searchName')}" value="${escapeHtml(uiState.matchSearch)}" oninput="onMatchSearch(this.value)" />
+          </div>
+        </div>
+
+        ${!state.isAdmin ? `<div class="alert-info">${t('visitorHint')}</div>` : ''}
+
+        <div class="tabs no-print">${roundTabs}</div>
+        <h3 style="margin-bottom: 14px; color: var(--accent); font-size: 15px;">${isFinalTab && thirdMatch ? t('finalMatchTitle') : currentRound.name}</h3>
+
+        <div class="matches-grid">
+          ${visibleMatches.map(({ m, idx }) => renderKnockoutMatchCard(league, isPlayoff, curIdx, idx, m)).join('')}
+        </div>
+
+        ${isFinalTab && thirdMatch ? `
+          <h3 style="margin: 22px 0 12px; color: var(--primary); font-size: 15px;">${t('thirdPlaceMatchTitle')}</h3>
+          <div class="matches-grid">
+            ${renderThirdPlaceCard(league, isPlayoff, thirdMatch)}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function renderKnockoutMatchCard(league, isPlayoff, roundIdx, matchIdx, m) {
+    const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
+    const ready = p1 && p2;
+    const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
+    const isDraw = ready && s1 !== '' && s2 !== '' && s1 === s2;
+    return `
+      <div class="match-card ${m.winnerId ? 'finished' : ''}">
+        <div class="match-header">
+          <span>${t('matchNum')} ${matchIdx + 1}</span>
+          <span>${m.winnerId ? t('finished') : (ready ? t('waitingResult') : t('waitingPrev'))}</span>
+        </div>
+        <div class="match-row">
+          <div class="player-box">
+            <div class="player-name ${m.winnerId === m.p1Id ? 'winner' : ''}">${p1 ? escapeHtml(p1.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
+            ${p1 ? renderPhoneWithWa(p1.phone) : ''}
+          </div>
+          ${state.isAdmin
+            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s1}" placeholder="-" onchange="updateKnockoutScore(${isPlayoff}, ${roundIdx}, ${matchIdx}, 's1', this.value)" />`
+            : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
+          }
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="match-row">
+          <div class="player-box">
+            <div class="player-name ${m.winnerId === m.p2Id ? 'winner' : ''}">${p2 ? escapeHtml(p2.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
+            ${p2 ? renderPhoneWithWa(p2.phone) : ''}
+          </div>
+          ${state.isAdmin
+            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s2}" placeholder="-" onchange="updateKnockoutScore(${isPlayoff}, ${roundIdx}, ${matchIdx}, 's2', this.value)" />`
+            : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
+          }
+        </div>
+        ${isDraw && state.isAdmin ? `
+          <div class="penalty-box">
+            <div>${t('drawPenaltyAsk')}</div>
+            <div class="penalty-options">
+              <button class="btn btn-sm ${m.penaltyWinnerId === p1.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setPenaltyWinner(${isPlayoff}, ${roundIdx}, ${matchIdx}, '${p1.id}')">${escapeHtml(p1.name)}</button>
+              <button class="btn btn-sm ${m.penaltyWinnerId === p2.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setPenaltyWinner(${isPlayoff}, ${roundIdx}, ${matchIdx}, '${p2.id}')">${escapeHtml(p2.name)}</button>
+            </div>
+          </div>
+        ` : (isDraw && m.winnerId ? `<div style="font-size:11px; color:var(--primary); margin-top:8px;">${t('penaltyWinnerIs')} ${escapeHtml(getPlayer(league, m.winnerId)?.name)}</div>` : '')}
+      </div>
+    `;
+  }
+
+  function renderThirdPlaceCard(league, isPlayoff, m) {
+    const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
+    const ready = p1 && p2;
+    const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
+    const isDraw = ready && s1 !== '' && s2 !== '' && s1 === s2;
+    return `
+      <div class="match-card ${m.winnerId ? 'finished' : ''}" style="border-color: rgba(255, 208, 0, 0.5);">
+        <div class="match-header">
+          <span>${t('thirdPlace')}</span>
+          <span>${m.winnerId ? t('finished') : (ready ? t('waitingResult') : t('waitingPrev'))}</span>
+        </div>
+        <div class="match-row">
+          <div class="player-box">
+            <div class="player-name ${m.winnerId === m.p1Id ? 'winner' : ''}">${p1 ? escapeHtml(p1.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
+            ${p1 ? renderPhoneWithWa(p1.phone) : ''}
+          </div>
+          ${state.isAdmin
+            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s1}" placeholder="-" onchange="updateThirdPlaceScore(${isPlayoff}, 's1', this.value)" />`
+            : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
+          }
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="match-row">
+          <div class="player-box">
+            <div class="player-name ${m.winnerId === m.p2Id ? 'winner' : ''}">${p2 ? escapeHtml(p2.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
+            ${p2 ? renderPhoneWithWa(p2.phone) : ''}
+          </div>
+          ${state.isAdmin
+            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s2}" placeholder="-" onchange="updateThirdPlaceScore(${isPlayoff}, 's2', this.value)" />`
+            : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
+          }
+        </div>
+        ${isDraw && state.isAdmin ? `
+          <div class="penalty-box">
+            <div>${t('drawPenaltyAsk')}</div>
+            <div class="penalty-options">
+              <button class="btn btn-sm ${m.penaltyWinnerId === p1.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setThirdPlacePenalty(${isPlayoff}, '${p1.id}')">${escapeHtml(p1.name)}</button>
+              <button class="btn btn-sm ${m.penaltyWinnerId === p2.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setThirdPlacePenalty(${isPlayoff}, '${p2.id}')">${escapeHtml(p2.name)}</button>
+            </div>
+          </div>
+        ` : (isDraw && m.winnerId ? `<div style="font-size:11px; color:var(--primary); margin-top:8px;">${t('penaltyWinnerIs')} ${escapeHtml(getPlayer(league, m.winnerId)?.name)}</div>` : '')}
+      </div>
+    `;
+  }
+
+  function selectKnockoutRound(isPlayoff, idx) {
+    if (isPlayoff) uiState.selectedPlayoffRoundIndex = idx;
+    else uiState.selectedRoundIndex = idx;
+    render();
+  }
+
+  function exportCurrentKnockoutPng(isPlayoff, roundIdx) {
+    const league = getActiveLeague();
+    const rounds = toArray(league[isPlayoff ? 'playoffRounds' : 'rounds']);
+    const r = rounds[roundIdx];
+    if (!r) return;
+    exportMatchesImage(r.name, toArray(r.matches));
+  }
+
+  function renderPointsSection(league) {
+    const hasPlayoffs = Boolean(league.playoffRounds && toArray(league.playoffRounds).length > 0);
+    const groups = toArray(league.groups);
+    if (groups.length === 0) return '';
+
+    const subTabs = (hasPlayoffs || (state.isAdmin && groups.length >= 2)) ? `
+      <div class="card no-print" style="padding: 12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="tabs" style="margin-bottom:0;">
+          <button class="tab-btn ${uiState.pointsSubTab === 'groups' ? 'active' : ''}" onclick="uiState.pointsSubTab='groups'; render();">${t('tabGroupStage')}</button>
+          ${hasPlayoffs ? `<button class="tab-btn ${uiState.pointsSubTab === 'playoffs' ? 'active' : ''}" onclick="uiState.pointsSubTab='playoffs'; render();">${t('tabPlayoffs')}</button>` : ''}
+        </div>
+        ${state.isAdmin && groups.length >= 2 ? `
+          <button class="btn btn-sm btn-success" onclick="openPlayoffModal()">${hasPlayoffs ? '🔄 ' : ''}${t('startPlayoffsCall')}</button>
+        ` : ''}
+      </div>
+    ` : '';
+
+    if (hasPlayoffs && uiState.pointsSubTab === 'playoffs') {
+      return subTabs + renderKnockoutSection(league, true);
+    }
+
+    const gIdx = Math.min(uiState.selectedGroupIndex, groups.length - 1);
+    const group = groups[gIdx];
+    const standings = computeStandings(league, group);
+    const allMatches = toArray(group.matches).map((m, i) => ({ ...m, _idx: i }));
+    const maxRound = Math.max(...allMatches.map(m => m.round));
+    const currentWeek = Math.min(uiState.selectedPointsRound, maxRound);
+    const weekMatches = allMatches.filter(m => m.round === currentWeek);
+
+    return subTabs + `
+      ${groups.length > 1 ? `
+        <div class="card" style="padding: 14px;">
+          <label style="margin-bottom: 8px;">${t('selectGroup')} (${groups.length}):</label>
+          <div class="tabs" style="margin-bottom: 0;">
+            ${groups.map((g, i) => `<button class="tab-btn ${i === gIdx ? 'active' : ''}" onclick="selectGroup(${i})">${escapeHtml(g.name)}</button>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="card">
+        <div class="card-title">
+          <span>${t('standingsTitle')} — ${escapeHtml(group.name)}</span>
+          <button class="btn btn-sm btn-outline no-print" onclick="exportStandingsImage(${gIdx})">${t('exportTablePng')}</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>${t('rank')}</th><th>${t('player')}</th><th>${t('phoneHeader')}</th><th>${t('played')}</th><th>${t('win')}</th><th>${t('draw')}</th><th>${t('loss')}</th><th>${t('gf')}</th><th>${t('ga')}</th><th>${t('gd')}</th><th>${t('pts')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${standings.map((row, idx) => `
+                <tr class="${idx < 2 ? 'qualify-row' : ''}">
+                  <td style="font-weight: 900; color: ${idx < 2 ? 'var(--emerald)' : 'var(--text)'};">${idx + 1}</td>
+                  <td style="font-weight: 700;">${escapeHtml(row.name)}</td>
+                  <td>${renderPhoneWithWa(row.phone)}</td>
+                  <td>${row.played}</td><td>${row.w}</td><td>${row.d}</td><td>${row.l}</td><td>${row.gf}</td><td>${row.ga}</td>
+                  <td dir="ltr">${row.gd > 0 ? '+' + row.gd : row.gd}</td>
+                  <td style="font-weight: 900; color: var(--primary); font-size: 15px;">${row.pts}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>${t('scheduleTitle')} (${escapeHtml(group.name)})</span>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap:wrap;">
+            <button class="btn btn-sm btn-outline no-print" onclick="exportGroupWeekPng(${gIdx}, ${currentWeek})">${t('exportMatchesPng')}</button>
+            <label style="margin: 0;">${t('weekLabel')}</label>
+            <select style="width: auto; min-width: 120px;" onchange="uiState.selectedPointsRound = parseInt(this.value, 10); render();">
+              ${Array.from({ length: maxRound }, (_, i) => i + 1).map(r => `<option value="${r}" ${r === currentWeek ? 'selected' : ''}>${r} / ${maxRound}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        ${!state.isAdmin ? `<div class="alert-info">${t('visitorHint')}</div>` : ''}
+        <div class="matches-grid">
+          ${weekMatches.map((m, idx) => {
+            const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
+            const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
+            const finished = s1 !== '' && s2 !== '';
+            return `
+              <div class="match-card ${finished ? 'finished' : ''}">
+                <div class="match-header"><span>${t('matchNum')} ${idx + 1}</span><span>${finished ? t('finished') : t('waitingResult')}</span></div>
+                <div class="match-row">
+                  <div class="player-box">
+                    <div class="player-name">${escapeHtml(p1?.name)}</div>
+                    ${p1 ? renderPhoneWithWa(p1.phone) : ''}
+                  </div>
+                  ${state.isAdmin
+                    ? `<input type="text" inputmode="numeric" class="score-input" value="${s1}" placeholder="-" onchange="updatePointsScore(${gIdx}, ${m._idx}, 's1', this.value)" />`
+                    : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
+                  }
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="match-row">
+                  <div class="player-box">
+                    <div class="player-name">${escapeHtml(p2?.name)}</div>
+                    ${p2 ? renderPhoneWithWa(p2.phone) : ''}
+                  </div>
+                  ${state.isAdmin
+                    ? `<input type="text" inputmode="numeric" class="score-input" value="${s2}" placeholder="-" onchange="updatePointsScore(${gIdx}, ${m._idx}, 's2', this.value)" />`
+                    : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
+                  }
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function selectGroup(idx) { uiState.selectedGroupIndex = idx; uiState.selectedPointsRound = 1; render(); }
+
+  function exportGroupWeekPng(gIdx, week) {
+    const league = getActiveLeague();
+    const g = toArray(league.groups)[gIdx];
+    const ms = toArray(g.matches).filter(m => m.round === week);
+    exportMatchesImage(`${g.name} — Week ${week}`, ms);
+  }
+
+  initFirebase();
+</script>
+</body>
+</html>
