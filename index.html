@@ -401,7 +401,7 @@
 <header>
   <div class="header-inner">
     <div class="brand">
-      <div class="brand-logo">وحدت</div>
+      <div class="brand-logo">W</div>
       <div>
         <h1 id="brandTitle">وحدت گروپ</h1>
         <p id="brandSubtitle">پلتفرم آنلاین لیگ‌های وحدت گروپ (eFootball)</p>
@@ -509,6 +509,8 @@
         <div>
           <label data-t="capacityLabel">تعداد اشتراک‌کنندگان</label>
           <select id="newLeagueCapacity">
+            <option value="8">8</option>
+            <option value="16">16</option>
             <option value="32">32</option>
             <option value="64">64</option>
             <option value="96">96</option>
@@ -1544,7 +1546,7 @@
     if (!league) return;
     const groups = toArray(league.groups);
     const sel = document.getElementById('playoffSizeSelect');
-    const options = [8, 16, 32, 64].filter(k => k <= league.capacity && k >= groups.length);
+    const options = [4, 8, 16, 32, 64].filter(k => k <= league.capacity && k >= groups.length);
     const ideal = groups.length * 2;
     sel.innerHTML = options.map(k => `<option value="${k}" ${k === ideal ? 'selected' : ''}>${k} Teams (${k === 8 ? 'QF' : k === 16 ? 'R16' : k === 32 ? 'R32' : 'R64'})</option>`).join('');
     openModal('playoffModal');
