@@ -11,10 +11,10 @@
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap');
 
     :root {
-      --bg-dark: #060a16;
-      --bg-card: rgba(13, 21, 42, 0.86);
-      --bg-card-2: rgba(19, 31, 60, 0.90);
-      --border: rgba(56, 189, 248, 0.22);
+      --bg-dark: #050914;
+      --bg-card: rgba(12, 20, 40, 0.88);
+      --bg-card-2: rgba(18, 30, 58, 0.92);
+      --border: rgba(56, 189, 248, 0.24);
       --primary: #ffd000;
       --primary-hover: #e5bb00;
       --accent: #00e5ff;
@@ -27,7 +27,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', Tahoma, Arial, sans-serif; }
 
     body {
-      background: radial-gradient(circle at top right, #0e2439, #060a16 60%);
+      background: radial-gradient(circle at top right, #0e263d, #050914 60%);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
@@ -51,20 +51,20 @@
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: linear-gradient(180deg, rgba(6, 10, 22, 0.58) 0%, rgba(6, 10, 22, 0.88) 100%);
+      background: linear-gradient(180deg, rgba(5, 9, 20, 0.56) 0%, rgba(5, 9, 20, 0.89) 100%);
       pointer-events: none;
     }
 
     /* Header */
     header {
-      background: rgba(8, 13, 28, 0.92);
+      background: rgba(7, 12, 26, 0.92);
       backdrop-filter: blur(14px);
       border-bottom: 2px solid var(--primary);
       padding: 12px 16px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
     }
 
     .header-inner {
@@ -84,7 +84,7 @@
       color: #000; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       font-weight: 900; font-size: 22px;
-      box-shadow: 0 0 18px rgba(255, 208, 0, 0.4);
+      box-shadow: 0 0 20px rgba(255, 208, 0, 0.42);
       flex-shrink: 0;
     }
     .brand h1 { font-size: 19px; font-weight: 900; color: var(--primary); line-height: 1.2; }
@@ -92,45 +92,55 @@
 
     .header-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
 
+    /* Live Pulse */
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+    .live-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--emerald); margin-inline-end: 5px;
+      animation: pulseDot 1.5s infinite;
+    }
+
     /* Announcement Banner */
     .announcement-bar {
-      background: linear-gradient(90deg, rgba(255, 208, 0, 0.16), rgba(0, 229, 255, 0.14));
-      border-bottom: 1px solid rgba(255, 208, 0, 0.35);
-      padding: 9px 16px;
+      background: linear-gradient(90deg, rgba(255, 208, 0, 0.18), rgba(0, 229, 255, 0.15));
+      border-bottom: 1px solid rgba(255, 208, 0, 0.4);
+      padding: 10px 16px;
       text-align: center;
       font-size: 13px;
       font-weight: 700;
       color: #fff;
     }
-    .announcement-bar span { color: var(--primary); margin-inline-end: 6px; }
 
     .container { max-width: 1220px; margin: 18px auto; padding: 0 14px; }
 
     /* Sponsor Spotlight Hero */
     .sponsor-hero {
-      background: linear-gradient(135deg, rgba(0, 230, 118, 0.14), rgba(13, 21, 42, 0.90) 60%, rgba(255, 208, 0, 0.12));
+      background: linear-gradient(135deg, rgba(0, 230, 118, 0.16), rgba(12, 20, 40, 0.92) 55%, rgba(255, 208, 0, 0.14));
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 230, 118, 0.38);
-      border-radius: 18px;
-      padding: 14px 18px;
+      border: 1px solid rgba(0, 230, 118, 0.4);
+      border-radius: 20px;
+      padding: 15px 18px;
       margin-bottom: 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
       flex-wrap: wrap;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     }
 
     .sponsor-profile { display: flex; align-items: center; gap: 14px; }
-    .sponsor-avatar-wrap { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+    .sponsor-avatar-wrap { position: relative; width: 66px; height: 66px; flex-shrink: 0; }
     .sponsor-avatar {
-      width: 64px; height: 64px;
+      width: 66px; height: 66px;
       border-radius: 50%;
       object-fit: cover;
       object-position: center top;
       border: 2.5px solid var(--emerald);
-      box-shadow: 0 0 15px rgba(0, 230, 118, 0.35);
+      box-shadow: 0 0 18px rgba(0, 230, 118, 0.4);
       background: linear-gradient(135deg, #0f5132, #198754);
       display: flex; align-items: center; justify-content: center;
       font-weight: 900; font-size: 24px; color: #fff;
@@ -140,13 +150,12 @@
       bottom: -2px; right: -2px;
       width: 22px; height: 22px;
       background: #1d9bf0;
-      border: 2px solid #060a16;
+      border: 2px solid #050914;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       color: #fff; font-size: 12px; font-weight: 900;
     }
-
-    .sponsor-info h3 { font-size: 15px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .sponsor-info h3 { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .sponsor-info small { font-size: 12px; color: var(--emerald); font-weight: 700; display: block; }
 
     /* Cards & Controls */
@@ -157,7 +166,7 @@
       border-radius: 18px;
       padding: 18px;
       margin-bottom: 18px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     }
 
     .card-title {
@@ -176,7 +185,7 @@
 
     input, select, textarea {
       width: 100%;
-      background: rgba(6, 10, 22, 0.85);
+      background: rgba(5, 9, 20, 0.85);
       border: 1px solid rgba(148, 163, 184, 0.25);
       color: var(--text);
       padding: 10px 12px;
@@ -192,7 +201,7 @@
 
     .checkbox-row {
       display: flex; align-items: center; gap: 8px; cursor: pointer;
-      padding: 8px 10px; background: rgba(6, 10, 22, 0.65);
+      padding: 8px 10px; background: rgba(5, 9, 20, 0.65);
       border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 10px; font-size: 13px;
     }
     .checkbox-row input { width: auto; }
@@ -202,21 +211,28 @@
       display: inline-flex; align-items: center; justify-content: center; gap: 5px;
       padding: 8px 13px; border-radius: 10px; border: none;
       cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.2s;
-      white-space: nowrap;
+      white-space: nowrap; text-decoration: none;
     }
     .btn:active { transform: scale(0.97); }
     .btn-primary { background: var(--primary); color: #000; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-accent { background: var(--accent); color: #000; }
     .btn-success { background: var(--emerald); color: #000; }
+    .btn-wa {
+      background: rgba(37, 211, 102, 0.18); color: #25d366;
+      border: 1px solid rgba(37, 211, 102, 0.45);
+      padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px; text-decoration: none;
+    }
+    .btn-wa:hover { background: #25d366; color: #000; }
     .btn-danger { background: rgba(255, 71, 87, 0.2); color: #ff6b78; border: 1px solid rgba(255, 71, 87, 0.45); }
     .btn-danger:hover { background: var(--danger); color: #fff; }
-    .btn-outline { background: rgba(6, 10, 22, 0.65); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.3); }
+    .btn-outline { background: rgba(5, 9, 20, 0.65); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.3); }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
     .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 8px; }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .badge-yellow { background: rgba(255, 208, 0, 0.18); color: var(--primary); border: 1px solid rgba(255, 208, 0, 0.35); }
     .badge-cyan { background: rgba(0, 229, 255, 0.18); color: var(--accent); border: 1px solid rgba(0, 229, 255, 0.35); }
     .badge-green { background: rgba(0, 230, 118, 0.18); color: var(--emerald); border: 1px solid rgba(0, 230, 118, 0.35); }
@@ -226,81 +242,117 @@
     .leagues-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 16px; }
     .league-pill {
       background: var(--bg-card); backdrop-filter: blur(8px);
-      border: 1px solid var(--border); padding: 10px 14px; border-radius: 14px;
-      cursor: pointer; min-width: 195px; flex-shrink: 0; transition: 0.2s;
+      border: 1px solid var(--border); padding: 11px 15px; border-radius: 14px;
+      cursor: pointer; min-width: 205px; flex-shrink: 0; transition: 0.2s;
     }
     .league-pill.active {
       border-color: var(--primary);
-      background: linear-gradient(135deg, rgba(255, 208, 0, 0.18), var(--bg-card-2));
-      box-shadow: 0 0 16px rgba(255, 208, 0, 0.15);
+      background: linear-gradient(135deg, rgba(255, 208, 0, 0.2), var(--bg-card-2));
+      box-shadow: 0 0 18px rgba(255, 208, 0, 0.18);
     }
-    .league-pill h4 { font-size: 14px; margin-bottom: 3px; }
+    .league-pill h4 { font-size: 14px; margin-bottom: 3px; color: #fff; }
     .league-pill span { font-size: 11px; color: var(--text-muted); }
+
+    /* Stats Strip inside League Card */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stat-box {
+      background: rgba(5, 9, 20, 0.62);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .stat-box small { display: block; font-size: 11px; color: var(--text-muted); }
+    .stat-box strong { font-size: 16px; font-weight: 900; color: var(--primary); }
 
     /* League Info Grid */
     .info-pills {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 10px;
       margin-top: 12px;
     }
     .info-pill-box {
-      background: rgba(6, 10, 22, 0.65);
+      background: rgba(5, 9, 20, 0.68);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 10px 12px;
       font-size: 12px;
     }
-    .info-pill-box small { display: block; color: var(--accent); font-size: 11px; margin-bottom: 2px; }
+    .info-pill-box small { display: block; color: var(--accent); font-size: 11px; margin-bottom: 3px; }
 
     .progress-wrap {
-      background: rgba(6, 10, 22, 0.85);
-      border-radius: 999px; height: 12px; overflow: hidden;
+      background: rgba(5, 9, 20, 0.88);
+      border-radius: 999px; height: 13px; overflow: hidden;
       border: 1px solid var(--border); margin: 10px 0;
     }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--emerald), var(--primary)); transition: width 0.3s ease; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--emerald), var(--primary)); transition: width 0.35s ease; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px; text-align: start; border-bottom: 1px solid var(--border); }
+    th, td { padding: 10px 9px; text-align: start; border-bottom: 1px solid var(--border); }
     th { background: var(--bg-card-2); color: var(--primary); font-weight: 700; white-space: nowrap; }
+    tr.qualify-row td:first-child { border-inline-start: 4px solid var(--emerald); }
 
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .tab-btn {
       padding: 8px 14px; border-radius: 10px;
-      background: rgba(6, 10, 22, 0.75); border: 1px solid var(--border);
-      color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: 700;
+      background: rgba(5, 9, 20, 0.78); border: 1px solid var(--border);
+      color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.2s;
     }
     .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
 
-    .matches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(295px, 1fr)); gap: 14px; }
+    /* Esports Match Card */
+    .matches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(305px, 1fr)); gap: 14px; }
     .match-card {
-      background: var(--bg-card-2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px;
+      background: linear-gradient(165deg, rgba(20, 34, 66, 0.94), rgba(10, 17, 36, 0.94));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
-    .match-card.finished { border-color: rgba(0, 230, 118, 0.55); }
-    .match-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
-    .match-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .match-card.finished { border-color: rgba(0, 230, 118, 0.6); }
+    .match-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; color: var(--text-muted);
+      margin-bottom: 10px; padding-bottom: 7px; border-bottom: 1px solid rgba(148,163,184,0.14);
+    }
+    .match-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .vs-divider {
+      display: flex; align-items: center; gap: 8px; margin: 7px 0;
+      font-size: 10px; font-weight: 900; color: var(--primary); opacity: 0.85;
+    }
+    .vs-divider::before, .vs-divider::after {
+      content: ""; flex: 1; height: 1px; background: rgba(255, 208, 0, 0.22);
+    }
+
     .player-box { flex: 1; min-width: 0; }
     .player-name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .player-name.winner { color: var(--emerald); }
-    .player-phone { font-size: 11px; color: var(--accent); direction: ltr; display: inline-block; }
+    .player-contact { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+    .player-phone { font-size: 12px; color: var(--accent); direction: ltr; font-weight: 600; }
 
-    .score-input { width: 54px; text-align: center; font-weight: 900; font-size: 16px; padding: 6px; }
+    .score-input { width: 54px; text-align: center; font-weight: 900; font-size: 17px; padding: 6px; }
     .score-display {
-      width: 46px; text-align: center; font-weight: 900; font-size: 16px;
-      padding: 6px; background: rgba(6, 10, 22, 0.75); border-radius: 8px; border: 1px solid var(--border);
+      width: 48px; text-align: center; font-weight: 900; font-size: 17px;
+      padding: 6px; background: rgba(5, 9, 20, 0.8); border-radius: 10px;
+      border: 1px solid var(--border); color: var(--primary);
     }
 
     .penalty-box {
       background: rgba(255, 208, 0, 0.1); border: 1px dashed var(--primary);
-      border-radius: 10px; padding: 8px; margin-top: 8px; font-size: 12px;
+      border-radius: 10px; padding: 8px; margin-top: 10px; font-size: 12px;
     }
     .penalty-options { display: flex; gap: 8px; margin-top: 6px; }
 
     /* Podium Banner */
     .podium-banner {
-      background: linear-gradient(135deg, rgba(255, 208, 0, 0.22), rgba(0, 230, 118, 0.15), rgba(0, 229, 255, 0.15));
+      background: linear-gradient(135deg, rgba(255, 208, 0, 0.22), rgba(0, 230, 118, 0.16), rgba(0, 229, 255, 0.16));
       backdrop-filter: blur(10px); border: 2px solid var(--primary);
       border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 18px;
     }
@@ -309,7 +361,7 @@
       gap: 10px; margin-top: 14px;
     }
     .podium-place {
-      background: rgba(6, 10, 22, 0.7); border: 1px solid var(--border);
+      background: rgba(5, 9, 20, 0.72); border: 1px solid var(--border);
       border-radius: 12px; padding: 12px;
     }
 
@@ -362,9 +414,7 @@
 <div id="announcementBar" class="announcement-bar hidden"></div>
 
 <div class="container">
-  <!-- Sponsor Showcase -->
   <div id="sponsorHero" class="sponsor-hero"></div>
-
   <div id="leaguesBar" class="leagues-bar no-print"></div>
   <div id="mainContent">
     <div class="card" style="text-align: center; padding: 40px;">...</div>
@@ -474,7 +524,7 @@
         </label>
       </div>
 
-      <div id="pointsOptionsBox" class="hidden" style="margin-bottom: 12px; padding: 12px; background: rgba(6,10,22,0.7); border-radius: 10px; border: 1px solid var(--border);">
+      <div id="pointsOptionsBox" class="hidden" style="margin-bottom: 12px; padding: 12px; background: rgba(5,9,20,0.7); border-radius: 10px; border: 1px solid var(--border);">
         <div class="grid-2">
           <div>
             <label data-t="pointsFormatLabel">فرمت لیگ امتیازی</label>
@@ -621,7 +671,7 @@
       sponsorTitle: 'شفیق الله محمدی',
       sponsorRole: 'رییس گروه وحدت • اسپانسر رسمی لیگ‌ها',
       sponsorNote: 'حامی ورزش و رقابت‌های آنلاین ای‌فوتبال',
-      online: '🟢 آنلاین',
+      online: 'آنلاین',
       connecting: '⏳ اتصال...',
       adminActive: '👑 مدیر فعال',
       newLeague: '+ لیگ جدید',
@@ -636,28 +686,34 @@
       points: 'امتیازی',
       regOpen: 'ثبت‌نام باز است',
       regClosed: 'ثبت‌نام بسته شده',
-      activeStatus: 'مسابقات فعال',
+      activeStatus: 'مسابقات زنده',
       playersCount: 'نفر',
       capacity: 'ظرفیت',
-      type: 'نوع',
+      type: 'فرمت لیگ',
+      statPlayers: 'ثبت‌نام شده',
+      statProgress: 'تکمیل ظرفیت',
+      statMatches: 'بازی‌های تکمیل‌شده',
+      statFormat: 'ساختار لیگ',
       entryFee: 'هزینه ورودی',
       prizes: 'جوایز',
       rules: 'قوانین مسابقات',
-      whatsapp: 'واتساپ هماهنگی',
+      whatsapp: 'واتساپ مدیر',
+      msgAdminWa: 'پیام در واتساپ',
+      waBtn: 'واتساپ',
       editInfoBtn: '⚙️ ویرایش قوانین/جوایز',
       lockReg: '🔒 بستن ثبت‌نام',
       unlockReg: '🔓 باز کردن ثبت‌نام',
       backToReg: 'بازگشت به ثبت‌نام',
       deleteLeague: 'حذف لیگ',
       tabMatches: 'جدول و مسابقات',
-      tabPlayers: 'لیست اشتراک‌کنندگان',
+      tabPlayers: 'لیست و واتساپ بازیکنان',
       tabGroupStage: 'مرحله گروهی',
       tabPlayoffs: 'مرحله حذفی (پلی‌آف)',
-      regHeader: 'ثبت‌نام اشتراک‌کنندگان (فقط نام و شماره تماس)',
+      regHeader: 'ثبت‌نام اشتراک‌کنندگان (فقط نام و شماره واتساپ)',
       fullName: 'نام کامل اشتراک‌کننده',
-      phoneNum: 'شماره تماس (واتساپ/موبایل)',
+      phoneNum: 'شماره واتساپ / تماس',
       registerBtn: '✅ ثبت‌نام در لیگ',
-      regSuccessMsg: '✅ ثبت‌نام شما انجام شد و به مدیریت وحدت گروپ ارسال گردید!',
+      regSuccessMsg: '✅ ثبت‌نام شما انجام شد و شماره واتساپ شما برای هماهنگی بازی‌ها در لیست ثبت گردید!',
       regSuccessPending: '⏳ ثبت‌نام شما ثبت شد و پس از تایید مدیر در لیست اصلی قرار می‌گیرد.',
       regAnother: 'ثبت‌نام نفر دیگر',
       capFullMsg: '✅ ظرفیت لیگ تکمیل شده است! منتظر قرعه‌کشی توسط مدیریت باشید.',
@@ -669,10 +725,9 @@
       pendingTitle: '⏳ در انتظار تایید مدیر',
       approveBtn: '✅ تایید',
       rejectBtn: '❌ رد',
-      registeredList: 'لیست تاییدشده‌ها',
-      searchName: 'جستجو نام...',
-      phonePrivacy: '(محرمانه)',
-      phoneAdmin: '(کامل - مدیر)',
+      registeredList: 'لیست بازیکنان و شماره‌های واتساپ',
+      searchName: 'جستجو نام یا شماره...',
+      phoneHeader: 'شماره واتساپ / تماس',
       actions: 'عملیات',
       edit: 'ویرایش',
       del: 'حذف',
@@ -683,7 +738,7 @@
       roundMatches: 'مراحل حذفی',
       matchNum: 'بازی',
       finished: '✅ تمام شده',
-      waitingResult: '⏳ در انتظار نتیجه',
+      waitingResult: '⏳ در انتظار بازی',
       waitingPrev: 'منتظر دور قبل',
       unknown: 'نامشخص',
       drawPenaltyAsk: 'مساوی! برنده پنالتی / وقت اضافه:',
@@ -692,12 +747,13 @@
       finalMatchTitle: '🏆 فینال قهرمانی',
       selectGroup: 'انتخاب گروه',
       standingsTitle: 'جدول رده‌بندی',
-      rank: 'رتبه', player: 'نام بازیکن', played: 'بازی', win: 'برد', draw: 'مساوی', loss: 'باخت', gf: 'زده', ga: 'خورده', gd: 'تفاضل', pts: 'امتیاز',
+      rank: 'رتبه', player: 'بازیکن', played: 'بازی', win: 'برد', draw: 'مساوی', loss: 'باخت', gf: 'زده', ga: 'خورده', gd: 'تفاضل', pts: 'امتیاز',
       scheduleTitle: 'برنامه و نتایج مسابقات',
       weekLabel: 'هفته / دور:',
       startPlayoffsCall: '🏆 شروع مرحله حذفی (صعود از گروه‌ها)',
       exportTablePng: '📸 عکس جدول',
       exportMatchesPng: '📸 عکس بازی‌ها',
+      visitorHint: '💡 برای انجام بازی خود، روی دکمه «واتساپ» کنار نام حریف بزنید تا مستقیم وارد چت شوید.',
       footerText: 'برگزارکننده: وحدت گروپ | با حمایت و اسپانسری رییس گروه وحدت: شفیق الله محمدی'
     },
     en: {
@@ -706,7 +762,7 @@
       sponsorTitle: 'Shafiqullah Mohammadi',
       sponsorRole: 'President of Wahdat Group • Official League Sponsor',
       sponsorNote: 'Supporting eFootball Esports & Tournaments',
-      online: '🟢 Online',
+      online: 'Online',
       connecting: '⏳ Connecting...',
       adminActive: '👑 Admin Active',
       newLeague: '+ New League',
@@ -725,24 +781,30 @@
       playersCount: 'Players',
       capacity: 'Capacity',
       type: 'Format',
+      statPlayers: 'Registered',
+      statProgress: 'Filled',
+      statMatches: 'Matches Done',
+      statFormat: 'Format',
       entryFee: 'Entry Fee',
       prizes: 'Prizes',
       rules: 'Rules',
-      whatsapp: 'Organizer WhatsApp',
+      whatsapp: 'Admin WhatsApp',
+      msgAdminWa: 'Message Admin',
+      waBtn: 'WhatsApp',
       editInfoBtn: '⚙️ Edit Rules/Prizes',
       lockReg: '🔒 Lock Registration',
       unlockReg: '🔓 Open Registration',
       backToReg: 'Reset to Registration',
       deleteLeague: 'Delete League',
       tabMatches: 'Matches & Standings',
-      tabPlayers: 'Participants',
+      tabPlayers: 'Players & WhatsApp',
       tabGroupStage: 'Group Stage',
       tabPlayoffs: 'Knockout Playoffs',
-      regHeader: 'Player Registration (Name & Phone Only)',
+      regHeader: 'Player Registration (Name & WhatsApp Only)',
       fullName: 'Full Name',
-      phoneNum: 'Phone / WhatsApp Number',
+      phoneNum: 'WhatsApp / Phone Number',
       registerBtn: '✅ Register Now',
-      regSuccessMsg: '✅ Registered! Your details were sent directly to Wahdat Group Admin.',
+      regSuccessMsg: '✅ Registered! Your WhatsApp number is now visible so opponents can contact you to play.',
       regSuccessPending: '⏳ Submitted! Your registration is waiting for Admin approval.',
       regAnother: 'Register Another Player',
       capFullMsg: '✅ League capacity is full! Waiting for the draw.',
@@ -754,10 +816,9 @@
       pendingTitle: '⏳ Pending Admin Approval',
       approveBtn: '✅ Approve',
       rejectBtn: '❌ Reject',
-      registeredList: 'Approved Players',
-      searchName: 'Search name...',
-      phonePrivacy: '(Private)',
-      phoneAdmin: '(Full - Admin)',
+      registeredList: 'Players & WhatsApp Numbers',
+      searchName: 'Search name or phone...',
+      phoneHeader: 'WhatsApp / Phone',
       actions: 'Actions',
       edit: 'Edit',
       del: 'Delete',
@@ -768,7 +829,7 @@
       roundMatches: 'Knockout Bracket',
       matchNum: 'Match',
       finished: '✅ Finished',
-      waitingResult: '⏳ Pending Score',
+      waitingResult: '⏳ Pending Match',
       waitingPrev: 'Waiting previous round',
       unknown: 'TBD',
       drawPenaltyAsk: 'Draw! Select Penalty / Extra Time Winner:',
@@ -783,6 +844,7 @@
       startPlayoffsCall: '🏆 Start Knockout Playoffs',
       exportTablePng: '📸 Save Table Image',
       exportMatchesPng: '📸 Save Matches Image',
+      visitorHint: '💡 Tap the "WhatsApp" button next to your opponent to message them directly and play your match!',
       footerText: 'Organized by Wahdat Group | Sponsored by Shafiqullah Mohammadi'
     }
   };
@@ -805,13 +867,13 @@
     lang: localStorage.getItem('wahdat_lang') || 'fa',
     playerSearch: '',
     activeTab: 'matches',
-    pointsSubTab: 'groups', // 'groups' | 'playoffs'
+    pointsSubTab: 'groups',
     selectedRoundIndex: 0,
     selectedPlayoffRoundIndex: 0,
     selectedGroupIndex: 0,
     selectedPointsRound: 1,
     matchSearch: '',
-    justRegisteredStatus: null // 'approved' | 'pending' | null
+    justRegisteredStatus: null
   };
 
   let privateListenerRef = null;
@@ -847,6 +909,28 @@
     const s = String(phone);
     if (s.length <= 5) return '***';
     return s.slice(0, 4) + '***' + s.slice(-3);
+  }
+
+  function formatWhatsAppUrl(phone) {
+    let p = normalizeDigits(phone).replace(/[^0-9+]/g, '');
+    if (!p) return '#';
+    if (p.startsWith('+')) p = p.slice(1);
+    else if (p.startsWith('00')) p = p.slice(2);
+    else if (p.startsWith('07') && p.length === 10) p = '93' + p.slice(1);
+    else if (p.startsWith('03') && p.length === 11) p = '92' + p.slice(1);
+    else if (p.startsWith('09') && p.length === 11) p = '98' + p.slice(1);
+    else if (p.startsWith('0')) p = '93' + p.slice(1);
+    return 'https://wa.me/' + p;
+  }
+
+  function renderPhoneWithWa(phone) {
+    if (!phone) return '';
+    return `
+      <div class="player-contact">
+        <span class="player-phone">${escapeHtml(phone)}</span>
+        <a href="${formatWhatsAppUrl(phone)}" target="_blank" rel="noopener" class="btn-wa">💬 ${t('waBtn')}</a>
+      </div>
+    `;
   }
 
   function escapeHtml(str) {
@@ -893,21 +977,15 @@
       .map(([pid, info]) => ({
         id: pid,
         name: info.name || '---',
-        phoneMasked: info.phoneMasked || '***',
-        phone: priv[pid]?.phone || '',
+        phone: info.phone || priv[pid]?.phone || pid,
         approved: info.approved !== false,
         createdAt: info.createdAt || 0
       }))
       .sort((a, b) => a.createdAt - b.createdAt);
   }
 
-  function getApprovedPlayers(league) {
-    return getAllPlayersList(league).filter(p => p.approved);
-  }
-
-  function getPendingPlayers(league) {
-    return getAllPlayersList(league).filter(p => !p.approved);
-  }
+  function getApprovedPlayers(league) { return getAllPlayersList(league).filter(p => p.approved); }
+  function getPendingPlayers(league) { return getAllPlayersList(league).filter(p => !p.approved); }
 
   function getPlayer(league, playerId) {
     if (!playerId || !league.players || !league.players[playerId]) return null;
@@ -916,8 +994,7 @@
     return {
       id: playerId,
       name: info.name || '---',
-      phoneMasked: info.phoneMasked || '***',
-      phone: priv?.phone || ''
+      phone: info.phone || priv?.phone || playerId
     };
   }
 
@@ -1197,7 +1274,7 @@
     const now = Date.now();
     const updates = {};
     updates[`publicData/leagues/${league.id}/players/${cleanPhone}`] = {
-      name, phoneMasked: maskPhone(cleanPhone), approved: !needsApproval, createdAt: now
+      name, phone: cleanPhone, phoneMasked: maskPhone(cleanPhone), approved: !needsApproval, createdAt: now
     };
     updates[`privatePhones/${league.id}/${cleanPhone}`] = {
       name, phone: cleanPhone, createdAt: now
@@ -1244,7 +1321,7 @@
         skipped++; continue;
       }
       const now = Date.now() + added;
-      updates[`publicData/leagues/${league.id}/players/${cleanPhone}`] = { name, phoneMasked: maskPhone(cleanPhone), approved: true, createdAt: now };
+      updates[`publicData/leagues/${league.id}/players/${cleanPhone}`] = { name, phone: cleanPhone, phoneMasked: maskPhone(cleanPhone), approved: true, createdAt: now };
       updates[`privatePhones/${league.id}/${cleanPhone}`] = { name, phone: cleanPhone, createdAt: now };
       currentApproved++; added++;
     }
@@ -1270,7 +1347,7 @@
       if (!existing[phone] && !updates[`publicData/leagues/${league.id}/players/${phone}`]) {
         const now = Date.now() + counter;
         const name = `${fn} ${ln} (${counter})`;
-        updates[`publicData/leagues/${league.id}/players/${phone}`] = { name, phoneMasked: maskPhone(phone), approved: true, createdAt: now };
+        updates[`publicData/leagues/${league.id}/players/${phone}`] = { name, phone, phoneMasked: maskPhone(phone), approved: true, createdAt: now };
         updates[`privatePhones/${league.id}/${phone}`] = { name, phone, createdAt: now };
         currentApproved++;
       }
@@ -1485,10 +1562,7 @@
     const base = Math.floor(K / G);
     const extra = K % G;
 
-    const seedsHigh = [];
-    const seedsLow = [];
-
-    // Take base top finishers from each group
+    const seedsHigh = [], seedsLow = [];
     allStandings.forEach((st, idx) => {
       for (let pos = 0; pos < base; pos++) {
         if (st[pos]) {
@@ -1498,29 +1572,24 @@
       }
     });
 
-    // Take best extra finishers across groups
     if (extra > 0) {
       const candidates = allStandings.map((st, idx) => st[base] ? { ...st[base], groupIdx: idx } : null).filter(Boolean);
       candidates.sort((a, b) => (b.pts - a.pts) || (b.gd - a.gd) || (b.gf - a.gf) || (b.w - a.w));
       candidates.slice(0, extra).forEach(c => seedsLow.push({ id: c.id, groupIdx: c.groupIdx }));
     }
 
-    // Interleave high and low seeds so Group A #1 faces Group B #2 etc.
     const combined = [...seedsHigh, ...seedsLow];
     const pairedPlayers = [];
     const half = K / 2;
     for (let i = 0; i < half; i++) {
-      const pA = combined[i];
-      const pB = combined[K - 1 - i];
-      pairedPlayers.push({ id: pA.id }, { id: pB.id });
+      pairedPlayers.push({ id: combined[i].id }, { id: combined[K - 1 - i].id });
     }
 
     const rounds = buildKnockoutBracket(K, pairedPlayers);
     const thirdMatch = hasThird ? { id: uid(), p1Id: '', p2Id: '', s1: '', s2: '', winnerId: '', penaltyWinnerId: '' } : null;
 
     await db.ref(`publicData/leagues/${league.id}`).update({
-      playoffRounds: rounds,
-      playoffThirdPlace: thirdMatch
+      playoffRounds: rounds, playoffThirdPlace: thirdMatch
     });
     closeModal('playoffModal');
     uiState.pointsSubTab = 'playoffs';
@@ -1528,13 +1597,12 @@
     render();
   }
 
-  // --- Scoring (Main Knockout OR Playoff Knockout) ---
+  // --- Scoring ---
   function clearDownstream(rounds, roundIdx, matchIdx, thirdPlaceObj) {
     if (roundIdx >= rounds.length) return;
     const match = rounds[roundIdx].matches[matchIdx];
     if (!match) return;
 
-    // If semifinal match changed, also clear its loser slot in 3rd place match
     if (thirdPlaceObj && roundIdx === rounds.length - 2) {
       const slot = matchIdx === 0 ? 'p1Id' : 'p2Id';
       thirdPlaceObj[slot] = '';
@@ -1603,874 +1671,4 @@
     const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
     const rounds = JSON.parse(JSON.stringify(toArray(league[roundsKey])));
     const thirdMatch = league[thirdKey] ? JSON.parse(JSON.stringify(league[thirdKey])) : null;
-    const match = rounds[roundIdx]?.matches?.[matchIdx];
-    if (!match) return;
-
-    const oldWinner = match.winnerId;
-    match.penaltyWinnerId = playerId;
-    match.winnerId = playerId;
-
-    if (oldWinner !== match.winnerId) {
-      clearDownstream(rounds, roundIdx, matchIdx, thirdMatch);
-      if (match.nextMatchIdx >= 0 && rounds[roundIdx + 1]) {
-        rounds[roundIdx + 1].matches[match.nextMatchIdx][match.nextSlot] = match.winnerId;
-      }
-      if (thirdMatch && roundIdx === rounds.length - 2) {
-        const loserId = match.winnerId === match.p1Id ? match.p2Id : match.p1Id;
-        thirdMatch[matchIdx === 0 ? 'p1Id' : 'p2Id'] = loserId;
-      }
-    }
-
-    const upd = {};
-    upd[`publicData/leagues/${league.id}/${roundsKey}`] = rounds;
-    if (thirdMatch) upd[`publicData/leagues/${league.id}/${thirdKey}`] = thirdMatch;
-    await db.ref().update(upd);
-  }
-
-  async function updateThirdPlaceScore(isPlayoff, field, value) {
-    const league = getActiveLeague();
-    if (!state.isAdmin || !league) return;
-    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
-    const m = JSON.parse(JSON.stringify(league[thirdKey]));
-    if (!m || !m.p1Id || !m.p2Id) return;
-
-    m[field] = normalizeDigits(value).replace(/[^0-9]/g, '');
-    if (m.s1 === '' || m.s2 === '' || m.s1 !== m.s2) m.penaltyWinnerId = '';
-
-    if (m.s1 === '' || m.s2 === '') m.winnerId = '';
-    else {
-      const g1 = parseInt(m.s1, 10), g2 = parseInt(m.s2, 10);
-      if (g1 > g2) m.winnerId = m.p1Id;
-      else if (g2 > g1) m.winnerId = m.p2Id;
-      else m.winnerId = m.penaltyWinnerId || '';
-    }
-    await db.ref(`publicData/leagues/${league.id}/${thirdKey}`).set(m);
-  }
-
-  async function setThirdPlacePenalty(isPlayoff, playerId) {
-    const league = getActiveLeague();
-    if (!state.isAdmin || !league) return;
-    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
-    await db.ref(`publicData/leagues/${league.id}/${thirdKey}`).update({
-      penaltyWinnerId: playerId, winnerId: playerId
-    });
-  }
-
-  async function updatePointsScore(groupIdx, matchIdx, field, value) {
-    const league = getActiveLeague();
-    if (!state.isAdmin || !league) return;
-    const cleanVal = normalizeDigits(value).replace(/[^0-9]/g, '');
-    await db.ref(`publicData/leagues/${league.id}/groups/${groupIdx}/matches/${matchIdx}/${field}`).set(cleanVal);
-  }
-
-  function computeStandings(league, group) {
-    const map = {};
-    for (const pid of toArray(group.playerIds)) {
-      const p = getPlayer(league, pid);
-      map[pid] = {
-        id: pid, name: p ? p.name : '---', phone: p ? (state.isAdmin ? p.phone : p.phoneMasked) : '',
-        played: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0
-      };
-    }
-
-    for (const m of toArray(group.matches)) {
-      if (m.s1 === '' || m.s2 === '' || m.s1 === undefined || m.s2 === undefined) continue;
-      const g1 = parseInt(m.s1, 10), g2 = parseInt(m.s2, 10);
-      const t1 = map[m.p1Id], t2 = map[m.p2Id];
-      if (!t1 || !t2) continue;
-
-      t1.played++; t2.played++; t1.gf += g1; t1.ga += g2; t2.gf += g2; t2.ga += g1;
-      if (g1 > g2) { t1.w++; t1.pts += 3; t2.l++; }
-      else if (g2 > g1) { t2.w++; t2.pts += 3; t1.l++; }
-      else { t1.d++; t2.d++; t1.pts += 1; t2.pts += 1; }
-    }
-
-    const list = Object.values(map).map(t => ({ ...t, gd: t.gf - t.ga }));
-    list.sort((a, b) => (b.pts - a.pts) || (b.gd - a.gd) || (b.gf - a.gf) || (b.w - a.w) || a.name.localeCompare(b.name, 'fa'));
-    return list;
-  }
-
-  // --- PNG Image Generator (Works 100% offline/mobile without external libs) ---
-  function exportStandingsImage(groupIdx) {
-    const league = getActiveLeague();
-    if (!league) return;
-    const group = toArray(league.groups)[groupIdx];
-    const standings = computeStandings(league, group);
-
-    const w = 900, rowH = 44, headerH = 140, footerH = 60;
-    const h = headerH + (standings.length + 1) * rowH + footerH;
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext('2d');
-
-    // Background
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#091128'); grad.addColorStop(1, '#060a16');
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
-
-    // Top Gold Bar
-    ctx.fillStyle = '#ffd000'; ctx.fillRect(0, 0, w, 6);
-    ctx.textAlign = 'center';
-    ctx.font = 'bold 28px Tahoma, Arial';
-    ctx.fillText(`وحدت گروپ • ${league.name}`, w / 2, 52);
-    ctx.fillStyle = '#00e5ff';
-    ctx.font = 'bold 20px Tahoma, Arial';
-    ctx.fillText(`${group.name} — جدول رده‌بندی`, w / 2, 92);
-    ctx.fillStyle = '#00e676';
-    ctx.font = '15px Tahoma, Arial';
-    ctx.fillText('اسپانسر: شفیق الله محمدی (رییس گروه وحدت)', w / 2, 122);
-
-    // Table Header
-    const y0 = headerH;
-    ctx.fillStyle = '#162244'; ctx.fillRect(30, y0, w - 60, rowH);
-    ctx.fillStyle = '#ffd000'; ctx.font = 'bold 16px Tahoma, Arial';
-    ctx.textAlign = 'right'; ctx.fillText('#', 75, y0 + 28);
-    ctx.fillText('بازیکن', 340, y0 + 28);
-    ctx.textAlign = 'center';
-    ctx.fillText('بازی', 420, y0 + 28);
-    ctx.fillText('برد', 495, y0 + 28);
-    ctx.fillText('مساوی', 575, y0 + 28);
-    ctx.fillText('باخت', 655, y0 + 28);
-    ctx.fillText('تفاضل', 740, y0 + 28);
-    ctx.fillText('امتیاز', 825, y0 + 28);
-
-    standings.forEach((row, i) => {
-      const y = y0 + (i + 1) * rowH;
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.07)';
-      ctx.fillRect(30, y, w - 60, rowH);
-      ctx.fillStyle = i < 2 ? '#00e676' : '#ffffff';
-      ctx.font = 'bold 17px Tahoma, Arial';
-      ctx.textAlign = 'right';
-      ctx.fillText(String(i + 1), 75, y + 28);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(row.name.slice(0, 26), 340, y + 28);
-      ctx.textAlign = 'center';
-      ctx.font = '16px Tahoma, Arial';
-      ctx.fillText(String(row.played), 420, y + 28);
-      ctx.fillText(String(row.w), 495, y + 28);
-      ctx.fillText(String(row.d), 575, y + 28);
-      ctx.fillText(String(row.l), 655, y + 28);
-      ctx.fillText(row.gd > 0 ? `+${row.gd}` : String(row.gd), 740, y + 28);
-      ctx.fillStyle = '#ffd000'; ctx.font = 'bold 18px Tahoma, Arial';
-      ctx.fillText(String(row.pts), 825, y + 28);
-    });
-
-    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Tahoma, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Wahdat Group eFootball Official Table', w / 2, h - 22);
-
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = `wahdat-standings-${group.name}.png`;
-    a.click();
-  }
-
-  function exportMatchesImage(title, matchItems) {
-    const league = getActiveLeague();
-    if (!league) return;
-    const items = matchItems.slice(0, 24);
-    const w = 900, rowH = 48, headerH = 135, footerH = 55;
-    const h = headerH + Math.max(items.length, 1) * rowH + footerH;
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext('2d');
-
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, '#091128'); grad.addColorStop(1, '#060a16');
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
-
-    ctx.fillStyle = '#ffd000'; ctx.fillRect(0, 0, w, 6);
-    ctx.textAlign = 'center';
-    ctx.font = 'bold 26px Tahoma, Arial';
-    ctx.fillText(`وحدت گروپ • ${league.name}`, w / 2, 48);
-    ctx.fillStyle = '#00e5ff'; ctx.font = 'bold 19px Tahoma, Arial';
-    ctx.fillText(title, w / 2, 86);
-    ctx.fillStyle = '#00e676'; ctx.font = '14px Tahoma, Arial';
-    ctx.fillText('اسپانسر: شفیق الله محمدی (رییس گروه وحدت)', w / 2, 114);
-
-    items.forEach((m, i) => {
-      const y = headerH + i * rowH;
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)';
-      ctx.fillRect(30, y, w - 60, rowH - 4);
-      const p1 = getPlayer(league, m.p1Id)?.name || '---';
-      const p2 = getPlayer(league, m.p2Id)?.name || '---';
-      const s1 = m.s1 !== '' && m.s1 !== undefined ? m.s1 : '-';
-      const s2 = m.s2 !== '' && m.s2 !== undefined ? m.s2 : '-';
-
-      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 16px Tahoma, Arial';
-      ctx.textAlign = 'right'; ctx.fillText(p1.slice(0, 22), 380, y + 29);
-      ctx.textAlign = 'left'; ctx.fillText(p2.slice(0, 22), 520, y + 29);
-      ctx.fillStyle = '#ffd000'; ctx.font = 'bold 20px Tahoma, Arial';
-      ctx.textAlign = 'center'; ctx.fillText(`${s1}  :  ${s2}`, 450, y + 30);
-    });
-
-    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Tahoma, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Wahdat Group eFootball Official Matches', w / 2, h - 18);
-
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = `wahdat-matches.png`;
-    a.click();
-  }
-
-  function exportBackup() {
-    if (!state.isAdmin) return;
-    const blob = new Blob([JSON.stringify({ leagues: state.leagues, privatePhones: state.privatePhones }, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `wahdat-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // --- Render ---
-  function translateStaticNodes() {
-    document.getElementById('brandTitle').textContent = t('brandTitle');
-    document.getElementById('brandSubtitle').textContent = t('brandSubtitle');
-    document.getElementById('footerBox').innerHTML = `<strong>${t('footerText')}</strong>`;
-    document.querySelectorAll('[data-t]').forEach(el => {
-      const k = el.getAttribute('data-t');
-      if (I18N[uiState.lang][k]) el.textContent = I18N[uiState.lang][k];
-    });
-  }
-
-  function render() {
-    applyLanguageDir();
-    translateStaticNodes();
-    renderHeaderActions();
-    renderAnnouncement();
-    renderSponsorHero();
-    renderLeaguesBar();
-    renderMainContent();
-  }
-
-  function renderHeaderActions() {
-    const box = document.getElementById('headerActions');
-    const langBtn = `<button class="btn btn-outline btn-sm" onclick="toggleLanguage()">🌐 ${uiState.lang === 'fa' ? 'EN' : 'فارسی'}</button>`;
-
-    if (state.isAdmin) {
-      box.innerHTML = `
-        <span class="badge badge-green">${t('adminActive')}</span>
-        ${langBtn}
-        <button class="btn btn-primary" onclick="openModal('createModal')">${t('newLeague')}</button>
-        <button class="btn btn-accent" onclick="document.getElementById('bgFileInput').click()">${t('sponsorPhotoBtn')}</button>
-        <input type="file" id="bgFileInput" accept="image/*" class="hidden" onchange="handleBgUpload(event)" />
-        ${state.bgImage ? `<button class="btn btn-danger btn-sm" onclick="clearBgImage()">${t('removePhotoBtn')}</button>` : ''}
-        <button class="btn btn-outline btn-sm" onclick="openAnnouncementModal()">${t('announcementBtn')}</button>
-        <button class="btn btn-outline btn-sm" onclick="openModal('changePassModal')">${t('changePassBtn')}</button>
-        <button class="btn btn-outline btn-sm" onclick="exportBackup()">${t('backupBtn')}</button>
-        <button class="btn btn-outline btn-sm" onclick="adminLogout()">${t('logoutBtn')}</button>
-      `;
-    } else {
-      box.innerHTML = `
-        <span class="badge badge-cyan">${state.connected ? t('online') : t('connecting')}</span>
-        ${langBtn}
-        <button class="btn btn-outline" onclick="openModal('loginModal')">${t('adminLoginBtn')}</button>
-      `;
-    }
-  }
-
-  function renderAnnouncement() {
-    const bar = document.getElementById('announcementBar');
-    if (state.announcement) {
-      bar.classList.remove('hidden');
-      bar.innerHTML = `<span>📢</span> ${escapeHtml(state.announcement)}`;
-    } else {
-      bar.classList.add('hidden');
-    }
-  }
-
-  function renderSponsorHero() {
-    const box = document.getElementById('sponsorHero');
-    const avatarHtml = state.bgImage
-      ? `<img src="${state.bgImage}" class="sponsor-avatar" alt="Shafiqullah Mohammadi" />`
-      : `<div class="sponsor-avatar">ش</div>`;
-
-    box.innerHTML = `
-      <div class="sponsor-profile">
-        <div class="sponsor-avatar-wrap">
-          ${avatarHtml}
-          <span class="verified-badge">✓</span>
-        </div>
-        <div class="sponsor-info">
-          <h3>${t('sponsorTitle')} <span class="badge badge-green">Official Sponsor</span></h3>
-          <small>${t('sponsorRole')}</small>
-          <span style="font-size: 11px; color: var(--text-muted);">${t('sponsorNote')}</span>
-        </div>
-      </div>
-      ${state.isAdmin && !state.bgImage ? `
-        <button class="btn btn-sm btn-accent no-print" onclick="document.getElementById('bgFileInput').click()">
-          + ${t('sponsorPhotoBtn')}
-        </button>
-      ` : ''}
-    `;
-  }
-
-  function renderLeaguesBar() {
-    const bar = document.getElementById('leaguesBar');
-    const leagues = getLeaguesArray();
-    if (leagues.length === 0) { bar.innerHTML = ''; return; }
-    const active = getActiveLeague();
-    bar.innerHTML = leagues.map(l => {
-      const count = getApprovedPlayers(l).length;
-      const isActive = active && l.id === active.id;
-      const typeLabel = l.type === 'knockout' ? t('knockout') : t('points');
-      const statusLabel = l.status === 'registration'
-        ? `${count}/${l.capacity}`
-        : (l.status === 'closed' ? `🔒 ${count}/${l.capacity}` : `⚽ ${t('activeStatus')}`);
-      return `
-        <div class="league-pill ${isActive ? 'active' : ''}" onclick="selectLeague('${l.id}')">
-          <h4>${escapeHtml(l.name)}</h4>
-          <span>${typeLabel} • ${l.capacity} ${t('playersCount')} • ${statusLabel}</span>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function renderMainContent() {
-    const container = document.getElementById('mainContent');
-    if (state.dbError) {
-      container.innerHTML = `<div class="card"><h3 style="color:var(--danger)">Database Error</h3><p>${escapeHtml(state.dbError)}</p></div>`;
-      return;
-    }
-    if (!state.connected) {
-      container.innerHTML = `<div class="card" style="text-align: center; padding: 40px;">${t('connecting')}</div>`;
-      return;
-    }
-
-    const league = getActiveLeague();
-    if (!league) {
-      container.innerHTML = `
-        <div class="card" style="text-align: center; padding: 45px 20px;">
-          <h2 style="color: var(--primary); margin-bottom: 10px;">${t('brandTitle')}</h2>
-          <p style="color: var(--text-muted); margin-bottom: 18px;">${t('sponsorRole')}</p>
-          ${state.isAdmin ? `<button class="btn btn-primary" onclick="openModal('createModal')">${t('newLeague')}</button>` : ''}
-        </div>
-      `;
-      return;
-    }
-
-    const typeText = league.type === 'knockout' ? t('knockout') : t('points');
-    const statusBadge = league.status === 'registration'
-      ? `<span class="badge badge-green">${t('regOpen')}</span>`
-      : (league.status === 'closed' ? `<span class="badge badge-red">${t('regClosed')}</span>` : `<span class="badge badge-green">${t('activeStatus')}</span>`);
-
-    const hasInfo = league.entryFee || league.prizes || league.rules || league.adminWhatsapp;
-
-    const headerCard = `
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <span style="color: var(--primary); font-size: 19px;">🏆 ${escapeHtml(league.name)}</span>
-            <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
-              <span class="badge badge-yellow">${t('type')}: ${typeText}</span>
-              <span class="badge badge-cyan">${t('capacity')}: ${league.capacity} ${t('playersCount')}</span>
-              ${statusBadge}
-            </div>
-          </div>
-          ${state.isAdmin ? `
-            <div class="no-print" style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-outline" onclick="openEditLeagueModal()">${t('editInfoBtn')}</button>
-              ${league.status !== 'active' ? `<button class="btn btn-sm btn-outline" onclick="toggleRegistrationLock()">${league.status === 'registration' ? t('lockReg') : t('unlockReg')}</button>` : ''}
-              ${league.status === 'active' ? `<button class="btn btn-sm btn-outline" onclick="resetLeagueToRegistration()">${t('backToReg')}</button>` : ''}
-              <button class="btn btn-sm btn-danger" onclick="deleteLeague('${league.id}')">${t('deleteLeague')}</button>
-            </div>
-          ` : ''}
-        </div>
-
-        ${hasInfo ? `
-          <div class="info-pills">
-            ${league.entryFee ? `<div class="info-pill-box"><small>💵 ${t('entryFee')}</small><strong>${escapeHtml(league.entryFee)}</strong></div>` : ''}
-            ${league.prizes ? `<div class="info-pill-box"><small>🎁 ${t('prizes')}</small><strong>${escapeHtml(league.prizes)}</strong></div>` : ''}
-            ${league.adminWhatsapp ? `<div class="info-pill-box"><small>📞 ${t('whatsapp')}</small><strong dir="ltr">${escapeHtml(league.adminWhatsapp)}</strong></div>` : ''}
-            ${league.rules ? `<div class="info-pill-box" style="grid-column: 1 / -1;"><small>📜 ${t('rules')}</small>${escapeHtml(league.rules)}</div>` : ''}
-          </div>
-        ` : ''}
-
-        ${league.status === 'active' ? `
-          <div class="tabs no-print" style="margin-top: 14px; margin-bottom: 0;">
-            <button class="tab-btn ${uiState.activeTab === 'matches' ? 'active' : ''}" onclick="setTab('matches')">${t('tabMatches')}</button>
-            <button class="tab-btn ${uiState.activeTab === 'players' ? 'active' : ''}" onclick="setTab('players')">${t('tabPlayers')} (${getApprovedPlayers(league).length})</button>
-          </div>
-        ` : ''}
-      </div>
-    `;
-
-    let bodyHtml = '';
-    if (league.status !== 'active') bodyHtml = renderRegistrationView(league);
-    else if (uiState.activeTab === 'players') bodyHtml = renderRegisteredPlayersCard(league, true);
-    else if (league.type === 'knockout') bodyHtml = renderKnockoutSection(league, false);
-    else bodyHtml = renderPointsSection(league);
-
-    container.innerHTML = headerCard + bodyHtml;
-  }
-
-  function setTab(tab) { uiState.activeTab = tab; render(); }
-
-  function renderRegistrationView(league) {
-    const approved = getApprovedPlayers(league);
-    const pending = getPendingPlayers(league);
-    const pct = Math.round((approved.length / league.capacity) * 100);
-    const isFull = approved.length >= league.capacity;
-    const canPublicRegister = league.status === 'registration' && !isFull;
-
-    return `
-      <div class="card">
-        <div class="card-title">
-          <span>${t('regHeader')}</span>
-          <span class="badge badge-cyan">${approved.length} / ${league.capacity} ${t('playersCount')}</span>
-        </div>
-
-        <div class="progress-wrap"><div class="progress-fill" style="width: ${pct}%"></div></div>
-
-        ${uiState.justRegisteredStatus && !state.isAdmin ? `
-          <div class="alert-info" style="border-color: var(--emerald); color: var(--emerald); background: rgba(0,230,118,0.14);">
-            ${uiState.justRegisteredStatus === 'pending' ? t('regSuccessPending') : t('regSuccessMsg')}
-            <div style="margin-top: 8px;">
-              <button class="btn btn-sm btn-outline" onclick="uiState.justRegisteredStatus=null; render();">${t('regAnother')}</button>
-            </div>
-          </div>
-        ` : ''}
-
-        ${!canPublicRegister ? `
-          <div class="alert-info" style="${isFull ? 'border-color: var(--emerald); color: var(--emerald);' : 'border-color: var(--danger); color: #ff6b78;'}">
-            ${isFull ? t('capFullMsg') : t('regClosedMsg')}
-          </div>
-        ` : (!uiState.justRegisteredStatus || state.isAdmin ? `
-          <form onsubmit="registerPlayer(event)" style="margin-top: 14px;">
-            <div class="grid-3" style="align-items: end;">
-              <div>
-                <label>${t('fullName')}</label>
-                <input type="text" id="regName" required />
-              </div>
-              <div>
-                <label>${t('phoneNum')}</label>
-                <input type="tel" id="regPhone" placeholder="07XXXXXXXX" required dir="ltr" />
-              </div>
-              <div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">${t('registerBtn')}</button>
-              </div>
-            </div>
-          </form>
-        ` : '')}
-
-        ${state.isAdmin ? `
-          <div class="no-print" style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px;">
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              ${!isFull ? `<button class="btn btn-sm btn-outline" onclick="openModal('bulkModal')">${t('bulkQuick')}</button>` : ''}
-              ${!isFull ? `<button class="btn btn-sm btn-outline" onclick="fillDemoPlayers()">${t('demoFill')}</button>` : ''}
-              ${approved.length + pending.length > 0 ? `<button class="btn btn-sm btn-danger" onclick="clearAllPlayers()">${t('clearAll')}</button>` : ''}
-            </div>
-            <button class="btn btn-success" ${approved.length !== league.capacity ? 'disabled' : ''} onclick="startTournament()">
-              ${t('startDraw')} (${league.capacity})
-            </button>
-          </div>
-        ` : ''}
-      </div>
-
-      ${state.isAdmin && pending.length > 0 ? `
-        <div class="card" style="border-color: var(--primary);">
-          <div class="card-title">
-            <span style="color: var(--primary);">${t('pendingTitle')} (${pending.length})</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>${t('player')}</th><th>${t('phoneAdmin')}</th><th>${t('actions')}</th></tr></thead>
-              <tbody>
-                ${pending.map((p, i) => `
-                  <tr>
-                    <td>${i + 1}</td>
-                    <td style="font-weight:700;">${escapeHtml(p.name)}</td>
-                    <td dir="ltr" style="color:var(--accent);">${escapeHtml(p.phone || p.phoneMasked)}</td>
-                    <td>
-                      <button class="btn btn-sm btn-success" onclick="approvePlayer('${p.id}')">${t('approveBtn')}</button>
-                      <button class="btn btn-sm btn-danger" onclick="deletePlayer('${p.id}')">${t('rejectBtn')}</button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ` : ''}
-
-      ${renderRegisteredPlayersCard(league, false)}
-    `;
-  }
-
-  function renderRegisteredPlayersCard(league, readOnly) {
-    const q = uiState.playerSearch.trim().toLowerCase();
-    const list = getApprovedPlayers(league).filter(p =>
-      p.name.toLowerCase().includes(q) || (state.isAdmin && p.phone.includes(q))
-    );
-
-    return `
-      <div class="card">
-        <div class="card-title">
-          <span>${t('registeredList')} (${getApprovedPlayers(league).length})</span>
-          <input id="playerSearchInput" type="text" style="max-width: 240px;" placeholder="${t('searchName')}" value="${escapeHtml(uiState.playerSearch)}" oninput="onPlayerSearch(this.value)" />
-        </div>
-        ${list.length === 0 ? `<p style="color: var(--text-muted); text-align: center; padding: 20px;">${t('noPlayers')}</p>` : `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width: 50px;">#</th>
-                  <th>${t('player')}</th>
-                  <th>${state.isAdmin ? t('phoneAdmin') : t('phonePrivacy')}</th>
-                  ${state.isAdmin && !readOnly ? `<th class="no-print" style="width: 140px;">${t('actions')}</th>` : ''}
-                </tr>
-              </thead>
-              <tbody>
-                ${list.map((p, idx) => `
-                  <tr>
-                    <td>${idx + 1}</td>
-                    <td style="font-weight: 700;">${escapeHtml(p.name)}</td>
-                    <td dir="ltr" style="color: var(--accent);">${escapeHtml(state.isAdmin ? (p.phone || p.phoneMasked) : p.phoneMasked)}</td>
-                    ${state.isAdmin && !readOnly ? `
-                      <td class="no-print">
-                        <button class="btn btn-sm btn-outline" onclick="editPlayer('${p.id}')">${t('edit')}</button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePlayer('${p.id}')">${t('del')}</button>
-                      </td>
-                    ` : ''}
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `}
-      </div>
-    `;
-  }
-
-  function onPlayerSearch(val) {
-    uiState.playerSearch = val; render();
-    const el = document.getElementById('playerSearchInput');
-    if (el) { el.focus(); el.setSelectionRange(val.length, val.length); }
-  }
-
-  function onMatchSearch(val) {
-    uiState.matchSearch = val; render();
-    const el = document.getElementById('matchSearchInput');
-    if (el) { el.focus(); el.setSelectionRange(val.length, val.length); }
-  }
-
-  // --- Render Knockout (used for both Main Knockout AND Playoff Knockout) ---
-  function renderKnockoutSection(league, isPlayoff) {
-    const roundsKey = isPlayoff ? 'playoffRounds' : 'rounds';
-    const thirdKey = isPlayoff ? 'playoffThirdPlace' : 'thirdPlaceMatch';
-    const selectedIdxKey = isPlayoff ? 'selectedPlayoffRoundIndex' : 'selectedRoundIndex';
-
-    const rounds = toArray(league[roundsKey]);
-    if (rounds.length === 0) return '';
-
-    const finalRound = rounds[rounds.length - 1];
-    const finalMatch = toArray(finalRound?.matches)[0];
-    const champion = finalMatch?.winnerId ? getPlayer(league, finalMatch.winnerId) : null;
-    const runnerUpId = champion ? (finalMatch.winnerId === finalMatch.p1Id ? finalMatch.p2Id : finalMatch.p1Id) : '';
-    const runnerUp = runnerUpId ? getPlayer(league, runnerUpId) : null;
-    const thirdMatch = league[thirdKey] || null;
-    const thirdWinner = thirdMatch?.winnerId ? getPlayer(league, thirdMatch.winnerId) : null;
-
-    const roundTabs = rounds.map((r, idx) => {
-      const ms = toArray(r.matches);
-      const done = ms.filter(m => m.winnerId).length;
-      return `<button class="tab-btn ${uiState[selectedIdxKey] === idx ? 'active' : ''}" onclick="selectKnockoutRound(${isPlayoff}, ${idx})">${r.name} (${done}/${ms.length})</button>`;
-    }).join('');
-
-    const curIdx = Math.min(uiState[selectedIdxKey], rounds.length - 1);
-    const currentRound = rounds[curIdx];
-    const isFinalTab = curIdx === rounds.length - 1;
-    const q = uiState.matchSearch.trim().toLowerCase();
-
-    const visibleMatches = toArray(currentRound.matches)
-      .map((m, idx) => ({ m, idx }))
-      .filter(({ m }) => {
-        if (!q) return true;
-        const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
-        return (p1?.name || '').toLowerCase().includes(q) || (p2?.name || '').toLowerCase().includes(q);
-      });
-
-    return `
-      ${champion ? `
-        <div class="podium-banner">
-          <div style="font-size: 36px;">🏆</div>
-          <h2 style="color: var(--primary); font-size: 23px;">${t('champion')}: ${escapeHtml(champion.name)}</h2>
-          <div class="podium-grid">
-            <div class="podium-place" style="border-color: var(--primary);">
-              <div>🥇 ${t('champion')}</div>
-              <strong>${escapeHtml(champion.name)}</strong>
-            </div>
-            ${runnerUp ? `
-              <div class="podium-place">
-                <div>🥈 ${t('runnerUp')}</div>
-                <strong>${escapeHtml(runnerUp.name)}</strong>
-              </div>
-            ` : ''}
-            ${thirdWinner ? `
-              <div class="podium-place">
-                <div>🥉 ${t('thirdPlace')}</div>
-                <strong>${escapeHtml(thirdWinner.name)}</strong>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      ` : ''}
-
-      <div class="card">
-        <div class="card-title">
-          <span>${t('roundMatches')}</span>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <button class="btn btn-sm btn-outline no-print" onclick="exportCurrentKnockoutPng(${isPlayoff}, ${curIdx})">${t('exportMatchesPng')}</button>
-            <input id="matchSearchInput" type="text" style="max-width: 210px;" placeholder="${t('searchName')}" value="${escapeHtml(uiState.matchSearch)}" oninput="onMatchSearch(this.value)" />
-          </div>
-        </div>
-        <div class="tabs no-print">${roundTabs}</div>
-        <h3 style="margin-bottom: 14px; color: var(--accent); font-size: 15px;">${isFinalTab && thirdMatch ? t('finalMatchTitle') : currentRound.name}</h3>
-
-        <div class="matches-grid">
-          ${visibleMatches.map(({ m, idx }) => renderKnockoutMatchCard(league, isPlayoff, curIdx, idx, m)).join('')}
-        </div>
-
-        ${isFinalTab && thirdMatch ? `
-          <h3 style="margin: 22px 0 12px; color: var(--primary); font-size: 15px;">${t('thirdPlaceMatchTitle')}</h3>
-          <div class="matches-grid">
-            ${renderThirdPlaceCard(league, isPlayoff, thirdMatch)}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }
-
-  function renderKnockoutMatchCard(league, isPlayoff, roundIdx, matchIdx, m) {
-    const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
-    const ready = p1 && p2;
-    const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
-    const isDraw = ready && s1 !== '' && s2 !== '' && s1 === s2;
-    return `
-      <div class="match-card ${m.winnerId ? 'finished' : ''}">
-        <div class="match-header">
-          <span>${t('matchNum')} ${matchIdx + 1}</span>
-          <span>${m.winnerId ? t('finished') : (ready ? t('waitingResult') : t('waitingPrev'))}</span>
-        </div>
-        <div class="match-row">
-          <div class="player-box">
-            <div class="player-name ${m.winnerId === m.p1Id ? 'winner' : ''}">${p1 ? escapeHtml(p1.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
-            ${p1 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p1.phone || p1.phoneMasked)}</span>` : ''}
-          </div>
-          ${state.isAdmin
-            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s1}" placeholder="-" onchange="updateKnockoutScore(${isPlayoff}, ${roundIdx}, ${matchIdx}, 's1', this.value)" />`
-            : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
-          }
-        </div>
-        <div class="match-row" style="margin-bottom: 0;">
-          <div class="player-box">
-            <div class="player-name ${m.winnerId === m.p2Id ? 'winner' : ''}">${p2 ? escapeHtml(p2.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
-            ${p2 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p2.phone || p2.phoneMasked)}</span>` : ''}
-          </div>
-          ${state.isAdmin
-            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s2}" placeholder="-" onchange="updateKnockoutScore(${isPlayoff}, ${roundIdx}, ${matchIdx}, 's2', this.value)" />`
-            : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
-          }
-        </div>
-        ${isDraw && state.isAdmin ? `
-          <div class="penalty-box">
-            <div>${t('drawPenaltyAsk')}</div>
-            <div class="penalty-options">
-              <button class="btn btn-sm ${m.penaltyWinnerId === p1.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setPenaltyWinner(${isPlayoff}, ${roundIdx}, ${matchIdx}, '${p1.id}')">${escapeHtml(p1.name)}</button>
-              <button class="btn btn-sm ${m.penaltyWinnerId === p2.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setPenaltyWinner(${isPlayoff}, ${roundIdx}, ${matchIdx}, '${p2.id}')">${escapeHtml(p2.name)}</button>
-            </div>
-          </div>
-        ` : (isDraw && m.winnerId ? `<div style="font-size:11px; color:var(--primary); margin-top:6px;">${t('penaltyWinnerIs')} ${escapeHtml(getPlayer(league, m.winnerId)?.name)}</div>` : '')}
-      </div>
-    `;
-  }
-
-  function renderThirdPlaceCard(league, isPlayoff, m) {
-    const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
-    const ready = p1 && p2;
-    const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
-    const isDraw = ready && s1 !== '' && s2 !== '' && s1 === s2;
-    return `
-      <div class="match-card ${m.winnerId ? 'finished' : ''}" style="border-color: rgba(255, 208, 0, 0.45);">
-        <div class="match-header">
-          <span>${t('thirdPlace')}</span>
-          <span>${m.winnerId ? t('finished') : (ready ? t('waitingResult') : t('waitingPrev'))}</span>
-        </div>
-        <div class="match-row">
-          <div class="player-box">
-            <div class="player-name ${m.winnerId === m.p1Id ? 'winner' : ''}">${p1 ? escapeHtml(p1.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
-            ${p1 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p1.phone || p1.phoneMasked)}</span>` : ''}
-          </div>
-          ${state.isAdmin
-            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s1}" placeholder="-" onchange="updateThirdPlaceScore(${isPlayoff}, 's1', this.value)" />`
-            : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
-          }
-        </div>
-        <div class="match-row" style="margin-bottom: 0;">
-          <div class="player-box">
-            <div class="player-name ${m.winnerId === m.p2Id ? 'winner' : ''}">${p2 ? escapeHtml(p2.name) : `<span style="color:var(--text-muted)">${t('unknown')}</span>`}</div>
-            ${p2 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p2.phone || p2.phoneMasked)}</span>` : ''}
-          </div>
-          ${state.isAdmin
-            ? `<input type="text" inputmode="numeric" class="score-input" ${!ready ? 'disabled' : ''} value="${s2}" placeholder="-" onchange="updateThirdPlaceScore(${isPlayoff}, 's2', this.value)" />`
-            : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
-          }
-        </div>
-        ${isDraw && state.isAdmin ? `
-          <div class="penalty-box">
-            <div>${t('drawPenaltyAsk')}</div>
-            <div class="penalty-options">
-              <button class="btn btn-sm ${m.penaltyWinnerId === p1.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setThirdPlacePenalty(${isPlayoff}, '${p1.id}')">${escapeHtml(p1.name)}</button>
-              <button class="btn btn-sm ${m.penaltyWinnerId === p2.id ? 'btn-success' : 'btn-outline'}" style="flex:1" onclick="setThirdPlacePenalty(${isPlayoff}, '${p2.id}')">${escapeHtml(p2.name)}</button>
-            </div>
-          </div>
-        ` : (isDraw && m.winnerId ? `<div style="font-size:11px; color:var(--primary); margin-top:6px;">${t('penaltyWinnerIs')} ${escapeHtml(getPlayer(league, m.winnerId)?.name)}</div>` : '')}
-      </div>
-    `;
-  }
-
-  function selectKnockoutRound(isPlayoff, idx) {
-    if (isPlayoff) uiState.selectedPlayoffRoundIndex = idx;
-    else uiState.selectedRoundIndex = idx;
-    render();
-  }
-
-  function exportCurrentKnockoutPng(isPlayoff, roundIdx) {
-    const league = getActiveLeague();
-    const rounds = toArray(league[isPlayoff ? 'playoffRounds' : 'rounds']);
-    const r = rounds[roundIdx];
-    if (!r) return;
-    exportMatchesImage(r.name, toArray(r.matches));
-  }
-
-  // --- Render Points Section (Groups + Optional Playoffs) ---
-  function renderPointsSection(league) {
-    const hasPlayoffs = Boolean(league.playoffRounds && toArray(league.playoffRounds).length > 0);
-    const groups = toArray(league.groups);
-    if (groups.length === 0) return '';
-
-    const subTabs = (hasPlayoffs || (state.isAdmin && groups.length >= 2)) ? `
-      <div class="card no-print" style="padding: 12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div class="tabs" style="margin-bottom:0;">
-          <button class="tab-btn ${uiState.pointsSubTab === 'groups' ? 'active' : ''}" onclick="uiState.pointsSubTab='groups'; render();">${t('tabGroupStage')}</button>
-          ${hasPlayoffs ? `<button class="tab-btn ${uiState.pointsSubTab === 'playoffs' ? 'active' : ''}" onclick="uiState.pointsSubTab='playoffs'; render();">${t('tabPlayoffs')}</button>` : ''}
-        </div>
-        ${state.isAdmin && groups.length >= 2 ? `
-          <button class="btn btn-sm btn-success" onclick="openPlayoffModal()">${hasPlayoffs ? '🔄 ' : ''}${t('startPlayoffsCall')}</button>
-        ` : ''}
-      </div>
-    ` : '';
-
-    if (hasPlayoffs && uiState.pointsSubTab === 'playoffs') {
-      return subTabs + renderKnockoutSection(league, true);
-    }
-
-    const gIdx = Math.min(uiState.selectedGroupIndex, groups.length - 1);
-    const group = groups[gIdx];
-    const standings = computeStandings(league, group);
-    const allMatches = toArray(group.matches).map((m, i) => ({ ...m, _idx: i }));
-    const maxRound = Math.max(...allMatches.map(m => m.round));
-    const currentWeek = Math.min(uiState.selectedPointsRound, maxRound);
-    const weekMatches = allMatches.filter(m => m.round === currentWeek);
-
-    return subTabs + `
-      ${groups.length > 1 ? `
-        <div class="card" style="padding: 14px;">
-          <label style="margin-bottom: 8px;">${t('selectGroup')} (${groups.length}):</label>
-          <div class="tabs" style="margin-bottom: 0;">
-            ${groups.map((g, i) => `<button class="tab-btn ${i === gIdx ? 'active' : ''}" onclick="selectGroup(${i})">${escapeHtml(g.name)}</button>`).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <div class="card">
-        <div class="card-title">
-          <span>${t('standingsTitle')} — ${escapeHtml(group.name)}</span>
-          <button class="btn btn-sm btn-outline no-print" onclick="exportStandingsImage(${gIdx})">${t('exportTablePng')}</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>${t('rank')}</th><th>${t('player')}</th>${state.isAdmin ? `<th>${t('phoneAdmin')}</th>` : ''}<th>${t('played')}</th><th>${t('win')}</th><th>${t('draw')}</th><th>${t('loss')}</th><th>${t('gf')}</th><th>${t('ga')}</th><th>${t('gd')}</th><th>${t('pts')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${standings.map((row, idx) => `
-                <tr>
-                  <td style="font-weight: 900; color: ${idx < 2 ? 'var(--emerald)' : 'var(--text)'};">${idx + 1}</td>
-                  <td style="font-weight: 700;">${escapeHtml(row.name)}</td>
-                  ${state.isAdmin ? `<td dir="ltr" style="color: var(--accent);">${escapeHtml(row.phone)}</td>` : ''}
-                  <td>${row.played}</td><td>${row.w}</td><td>${row.d}</td><td>${row.l}</td><td>${row.gf}</td><td>${row.ga}</td>
-                  <td dir="ltr">${row.gd > 0 ? '+' + row.gd : row.gd}</td>
-                  <td style="font-weight: 900; color: var(--primary); font-size: 15px;">${row.pts}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">
-          <span>${t('scheduleTitle')} (${escapeHtml(group.name)})</span>
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap:wrap;">
-            <button class="btn btn-sm btn-outline no-print" onclick="exportGroupWeekPng(${gIdx}, ${currentWeek})">${t('exportMatchesPng')}</button>
-            <label style="margin: 0;">${t('weekLabel')}</label>
-            <select style="width: auto; min-width: 120px;" onchange="uiState.selectedPointsRound = parseInt(this.value, 10); render();">
-              ${Array.from({ length: maxRound }, (_, i) => i + 1).map(r => `<option value="${r}" ${r === currentWeek ? 'selected' : ''}>${r} / ${maxRound}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div class="matches-grid">
-          ${weekMatches.map((m, idx) => {
-            const p1 = getPlayer(league, m.p1Id), p2 = getPlayer(league, m.p2Id);
-            const s1 = m.s1 ?? '', s2 = m.s2 ?? '';
-            const finished = s1 !== '' && s2 !== '';
-            return `
-              <div class="match-card ${finished ? 'finished' : ''}">
-                <div class="match-header"><span>${t('matchNum')} ${idx + 1}</span><span>${finished ? t('finished') : t('waitingResult')}</span></div>
-                <div class="match-row">
-                  <div class="player-box">
-                    <div class="player-name">${escapeHtml(p1?.name)}</div>
-                    ${p1 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p1.phone || p1.phoneMasked)}</span>` : ''}
-                  </div>
-                  ${state.isAdmin
-                    ? `<input type="text" inputmode="numeric" class="score-input" value="${s1}" placeholder="-" onchange="updatePointsScore(${gIdx}, ${m._idx}, 's1', this.value)" />`
-                    : `<div class="score-display">${s1 !== '' ? s1 : '-'}</div>`
-                  }
-                </div>
-                <div class="match-row" style="margin-bottom: 0;">
-                  <div class="player-box">
-                    <div class="player-name">${escapeHtml(p2?.name)}</div>
-                    ${p2 && state.isAdmin ? `<span class="player-phone">${escapeHtml(p2.phone || p2.phoneMasked)}</span>` : ''}
-                  </div>
-                  ${state.isAdmin
-                    ? `<input type="text" inputmode="numeric" class="score-input" value="${s2}" placeholder="-" onchange="updatePointsScore(${gIdx}, ${m._idx}, 's2', this.value)" />`
-                    : `<div class="score-display">${s2 !== '' ? s2 : '-'}</div>`
-                  }
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  function selectGroup(idx) { uiState.selectedGroupIndex = idx; uiState.selectedPointsRound = 1; render(); }
-
-  function exportGroupWeekPng(gIdx, week) {
-    const league = getActiveLeague();
-    const g = toArray(league.groups)[gIdx];
-    const ms = toArray(g.matches).filter(m => m.round === week);
-    exportMatchesImage(`${g.name} — Week ${week}`, ms);
-  }
-
-  initFirebase();
-</script>
-</body>
-  </html>
+    const match = rounds[roundIdx]?.matche
